@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ✅ PREVENIR CACHÉ (CRÍTICO PARA CELULARES) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Login - NEURODESARROLLO</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .login-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+        .logo { 
+            font-size: 42px; 
+            margin-bottom: 12px; 
+            color: #004a80;
+        }
+        h1 { 
+            color: #2c3e50; 
+            margin-bottom: 20px; 
+            font-size: 22px;
+            font-weight: 700;
+        }
+        .form-group { 
+            margin-bottom: 18px; 
+            text-align: left; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            color: #34495e; 
+            font-weight: bold;
+            font-size: 15px;
+        }
+        select, input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .error {
+            color: #e74c3c;
+            background: #fadbd8;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            font-weight: bold;
+            font-size: 15px;
+            text-align: left;
+        }
+        .nota {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 10px;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+            font-size: 13px;
+            text-align: left;
+        }
+        .wifi-instruccion {
+            background: #e8f5e9;
+            border: 1px solid #4caf50;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 12px 0;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 20px;
+            color: rgba(255,255,255,0.9);
+            font-size: 13px;
+        }
+        
+        /* Responsive para móviles */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 20px;
+                border-radius: 12px;
+            }
+            h1 { font-size: 20px; }
+            select, input { font-size: 16px !important; padding: 12px; }
+            button { font-size: 16px; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">🧠</div>
+        <h1>NEURODESARROLLO</h1>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+        
+        <div class="wifi-instruccion">
+            📶 Conéctate al WiFi "Promesalud" para acceder
+        </div>
+        
+        <form method="POST">
+            <div class="form-group">
+                <label>Selecciona tu rol:</label>
+                <select name="usuario" id="usuario" required style="font-size: 16px;">
+                    <option value="">— Elige una opción —</option>
+                    <option value="admin">🔐 Administrador (admin)</option>
+                    <option value="usuario1">🔐 Administrador (usuario1)</option>
+                    <optgroup label="Profesionales">
+                        {% for prof in profesionales %}
+                        <option value="{{ prof }}">{{ prof }}</option>
+                        {% endfor %}
+                    </optgroup>
+                </select>
+            </div>
+            <div class="form-group" id="contrasena-container" style="display:none;">
+                <label>Contraseña:</label>
+                <input type="password" name="contrasena" placeholder="••••••••" autocomplete="current-password">
+            </div>
+            <button type="submit" id="login-btn">🔐 Ingresar</button>
+        </form>
+        
+        <div class="nota">
+            👤 <strong>Profesionales:</strong> Selecciona tu nombre → Ingresa sin contraseña<br>
+            🔐 <strong>Administradores:</strong> Selecciona tu usuario → Ingresa contraseña
+        </div>
+        
+        <div class="footer">
+            📱 Sistema optimizado para celulares<br>
+            📍 Cra 36 #54-50, Cabecera, Bucaramanga
+        </div>
+    </div>
+    
+    <script>
+        // Mostrar/ocultar campo de contraseña según selección
+        document.getElementById('usuario').addEventListener('change', function() {
+            const contContrasena = document.getElementById('contrasena-container');
+            const esAdmin = this.value === 'admin' || this.value === 'usuario1';
+            contContrasena.style.display = esAdmin ? 'block' : 'none';
+        });
+        
+        // Enfocar al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('usuario').focus();
+        });
+    </script>
+</body>
+</html>

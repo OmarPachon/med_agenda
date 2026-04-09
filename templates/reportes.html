@@ -1,0 +1,380 @@
+<!-- templates/reportes.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agendamiento-Med Elite - Reportes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: url('/static/med.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.88);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 14px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        h2 {
+            color: #004a80;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin: 14px 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        button {
+            background: linear-gradient(to bottom, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 11px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+        }
+
+        .btn-exportar {
+            background: linear-gradient(to bottom, #28a745, #218838);
+            margin-left: 10px;
+        }
+
+        .btn-volver {
+            background: linear-gradient(to bottom, #6c757d, #545b62);
+            display: block;
+            margin: 15px auto;
+            width: fit-content;
+        }
+
+        #resultado_reporte {
+            margin-top: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background: #e7f3ff;
+            color: #0066a1;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .resumen-box {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📊 Generador de Reportes</h2>
+        <button class="btn-volver" onclick="location.href='/'">← Volver al Agendamiento</button>
+
+        <!-- Nuevos campos para filtro por documento -->
+        <div class="form-group">
+            <label>Tipo de Documento:</label>
+            <select id="tipo_doc_paciente">
+                <option value="CC">CC</option>
+                <option value="TI">TI</option>
+                <option value="CE">CE</option>
+                <option value="RC">RC</option>
+                <option value="PA">PA</option>
+                <option value="PT">PT</option>
+                <option value="SC">SC</option>
+                <option value="CN">CN</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Número de Documento:</label>
+            <input type="text" id="num_doc_paciente" placeholder="Ej: 1095701378">
+        </div>
+
+        <div class="form-group">
+            <label>Tipo de Reporte:</label>
+            <select id="tipo_reporte">
+                <option value="actividad_profesional">Resumen de Actividades por Profesional</option>
+                <option value="terapias_paciente">Resumen de Terapias por Paciente</option>
+                <option value="reporte_general">Reporte General por Período</option>
+                <option value="reporte_detallado">📋 Reporte Detallado General (Todos los campos)</option>
+                <option value="control_terapias">✅ Control de Terapias (Autorizadas vs Realizadas)</option>
+                <option value="reporte_diagnosticos">📋 Reporte por Diagnóstico (Citas y Pacientes)</option>
+                <option value="reporte_canceladas">❌ Citas Canceladas</option>
+                <option value="reporte_no_asistieron">🟥 Citas con Inasistencia</option>
+                <option value="reporte_por_paciente">🔍 Citas por Documento de Paciente</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Fecha Inicio:</label>
+            <input type="date" id="fecha_inicio">
+        </div>
+
+        <div class="form-group">
+            <label>Fecha Fin:</label>
+            <input type="date" id="fecha_fin">
+        </div>
+
+        <button onclick="generarReporte()">✅ Generar Reporte</button>
+        <button class="btn-exportar" onclick="exportarReporte()">📥 Exportar a Excel</button>
+
+        <div id="resultado_reporte"></div>
+    </div>
+
+    <script>
+        const hoy = new Date().toISOString().split('T')[0];
+        const hace30 = new Date();
+        hace30.setDate(hace30.getDate() - 30);
+        document.getElementById("fecha_inicio").value = hace30.toISOString().split('T')[0];
+        document.getElementById("fecha_fin").value = hoy;
+
+        async function generarReporte() {
+            const tipo = document.getElementById("tipo_reporte").value;
+            const inicio = document.getElementById("fecha_inicio").value;
+            const fin = document.getElementById("fecha_fin").value;
+
+            if (tipo === "reporte_por_paciente") {
+                const tipoDoc = document.getElementById("tipo_doc_paciente").value;
+                const numDoc = document.getElementById("num_doc_paciente").value.trim();
+                if (!tipoDoc || !numDoc || !inicio || !fin) {
+                    alert("Debe completar tipo de documento, número y rango de fechas.");
+                    return;
+                }
+                const payload = {
+                    tipo: tipo,
+                    tipo_doc_paciente: tipoDoc,
+                    num_doc_paciente: numDoc,
+                    fecha_inicio: inicio,
+                    fecha_fin: fin
+                };
+                const res = await fetch("/generar-reporte", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                const cont = document.getElementById("resultado_reporte");
+                if (data.error) {
+                    cont.innerHTML = `<p style="color:red; text-align:center; padding:15px;">❌ ${data.error}</p>`;
+                } else {
+                    cont.innerHTML = data.html;
+                }
+            } else {
+                if (!inicio || !fin) {
+                    alert("Seleccione ambas fechas.");
+                    return;
+                }
+                const res = await fetch("/generar-reporte", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({tipo, fecha_inicio: inicio, fecha_fin: fin})
+                });
+                const data = await res.json();
+                const cont = document.getElementById("resultado_reporte");
+                if (data.error) {
+                    cont.innerHTML = `<p style="color:red; text-align:center; padding:15px;">❌ ${data.error}</p>`;
+                } else {
+                    cont.innerHTML = data.html;
+                }
+            }
+        }
+
+        function exportarReporte() {
+    const tipo = document.getElementById("tipo_reporte").value;
+    const inicio = document.getElementById("fecha_inicio").value;
+    const fin = document.getElementById("fecha_fin").value;
+
+    // Validaciones
+    if (tipo === "reporte_por_paciente") {
+        const tipoDoc = document.getElementById("tipo_doc_paciente").value;
+        const numDoc = document.getElementById("num_doc_paciente").value.trim();
+        if (!tipoDoc || !numDoc || !inicio || !fin) {
+            alert("Complete todos los campos para exportar.");
+            return;
+        }
+    } else {
+        if (!inicio || !fin) {
+            alert("Seleccione ambas fechas.");
+            return;
+        }
+    }
+
+    // ✅ NUEVO: Manejo especial para control_terapias
+    if (tipo === "control_terapias") {
+        // Usar fetch para enviar JSON y recibir el archivo
+        fetch("/exportar-control-terapias", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                fecha_inicio: inicio,
+                fecha_fin: fin
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Error al generar el reporte");
+            return response.blob();
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `control_terapias_${inicio}_a_${fin}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+        })
+        .catch(err => {
+            alert("❌ Error al exportar: " + err.message);
+        });
+        return;
+    }
+
+    // ✅ MANEJO ESPECIAL PARA terapias_paciente
+    if (tipo === "terapias_paciente") {
+        fetch("/exportar-terapias-paciente", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({fecha_inicio: inicio, fecha_fin: fin})
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Error al generar el reporte");
+            return response.blob();
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `terapias_paciente_${inicio}_a_${fin}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+        })
+        .catch(err => {
+            alert("❌ Error al exportar: " + err.message);
+        });
+        return;
+    }
+        
+        // ✅ NUEVO: MANEJO ESPECIAL PARA actividad_profesional
+        if (tipo === "actividad_profesional") {
+            fetch("/exportar-actividad-profesional", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({fecha_inicio: inicio, fecha_fin: fin})
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Error al generar el reporte");
+                return response.blob();
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `actividad_profesional_${inicio}_a_${fin}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+            })
+            .catch(err => {
+                alert("❌ Error al exportar: " + err.message);
+            });
+            return;
+        }
+
+    // Exportación tradicional para otros reportes
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/exportar-reporte';
+    form.style.display = 'none';
+
+    const campos = [
+        { name: 'tipo', value: tipo },
+        { name: 'fecha_inicio', value: inicio },
+        { name: 'fecha_fin', value: fin }
+    ];
+
+    if (tipo === "reporte_por_paciente") {
+        campos.push(
+            { name: 'tipo_doc_paciente', value: document.getElementById("tipo_doc_paciente").value },
+            { name: 'num_doc_paciente', value: document.getElementById("num_doc_paciente").value.trim() }
+        );
+    }
+
+    campos.forEach(campo => {
+        const el = document.createElement('input');
+        el.name = campo.name;
+        el.value = campo.value;
+        form.appendChild(el);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+}
+    </script>
+</body>
+</html>

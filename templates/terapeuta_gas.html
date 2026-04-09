@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ✅ PREVENIR CACHÉ -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Metas GAS - {{ profesional }}</title>
+    <!-- Chart.js para gráfico de progreso -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f5f7fa; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h2 { color: #004a80; margin-bottom: 20px; text-align: center; }
+        h3 { color: #0066a1; margin: 15px 0 10px; border-bottom: 2px solid #e0f0fa; padding-bottom: 5px; }
+        .paciente-card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; background: #f8f9fa; }
+        .btn-gas { background: linear-gradient(to bottom, #6f42c1, #5a32a3); color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin: 5px 5px 5px 0; }
+        .btn-gas:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .btn-volver { background: linear-gradient(to bottom, #6c757d, #545b62); color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 15px; }
+        .btn-report { background: linear-gradient(to bottom, #007bff, #0056b3); color: white; }
+        .meta-item { background: white; padding: 12px; margin: 8px 0; border-radius: 6px; border-left: 4px solid #007bff; }
+        .meta-item.evaluated { border-left-color: #28a745; }
+        .nivel { font-size: 13px; color: #555; margin: 3px 0; }
+        .oculto { display: none; }
+        
+        /* Tarjeta de T-score */
+        .tscore-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 12px; margin: 15px 0; text-align: center; }
+        .tscore-value { font-size: 2.5em; font-weight: bold; }
+        
+        /* Responsive para móviles */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 15px; }
+            .btn-gas { width: 100%; margin: 5px 0; }
+            .tscore-value { font-size: 2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="btn-volver" onclick="location.href='/'">← Volver al Agendamiento</button>
+        <h2>🎯 Metas GAS - {{ profesional }}</h2>
+        
+        {% if pacientes %}
+            {% for tipo, num, nombre in pacientes %}
+            <div class="paciente-card">
+                <strong>{{ nombre }}</strong> <small>({{ tipo }}: {{ num }})</small><br>
+                <button class="btn-gas" onclick="abrirCrearMeta('{{tipo}}','{{num}}','{{nombre}}')">+ Nueva Meta</button>
+                <button class="btn-gas" style="background: linear-gradient(to bottom, #28a745, #218838);" onclick="cargarMetasPaciente('{{tipo}}','{{num}}')">📋 Ver Metas</button>
+                <button class="btn-gas" style="background: linear-gradient(to bottom, #17a2b8, #138496);" onclick="cargarTscorePaciente('{{tipo}}','{{num}}')">📊 Ver T-Score</button>
+                <!-- ✅ NUEVO BOTÓN: Reporte Profesional -->
+                <button class="btn-gas btn-report" onclick="location.href='/gas/reporte/{{tipo}}/{{num}}'">📄 Ver Reporte</button>
+                <div id="metas_{{tipo}}_{{num}}" class="oculto" style="margin-top:10px;"></div>
+                <div id="progreso_{{tipo}}_{{num}}" class="oculto" style="margin-top:15px;">
+                    <canvas id="chart_{{tipo}}_{{num}}" height="200"></canvas>
+                </div>
+                <div id="tscore_{{tipo}}_{{num}}" class="oculto"></div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="color:#666; text-align:center;">No hay pacientes con citas activas asignadas.</p>
+        {% endif %}
+    </div>
+
+    <!-- Modal para crear meta -->
+    <div id="modal_crear_meta" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; align-items:center; justify-content:center;">
+        <div class="container" style="max-width:600px; max-height:90vh; overflow-y:auto;">
+            <h3>🎯 Nueva Meta GAS</h3>
+            <input type="hidden" id="gas_tipo_doc">
+            <input type="hidden" id="gas_num_doc">
+            <div style="margin:15px 0;"><strong>Paciente:</strong> <span id="gas_nombre_paciente"></span></div>
+            <div style="margin:10px 0;">
+                <label>Descripción (SMART):</label>
+                <textarea id="gas_descripcion" rows="3" style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;"></textarea>
+            </div>
+            <div style="margin:10px 0;">
+                <label>Dominio:</label>
+                <select id="gas_dominio" style="width:100%; padding:8px; border-radius:6px;">
+                    <option value="lenguaje_expresivo">Lenguaje Expresivo</option>
+                    <option value="lenguaje_receptivo">Lenguaje Receptivo</option>
+                    <option value="cognicion">Cognición</option>
+                    <option value="social">Social</option>
+                    <option value="autorregulacion">Autorregulación</option>
+                    <option value="motricidad_fina">Motricidad Fina</option>
+                    <option value="motricidad_gruesa">Motricidad Gruesa</option>
+                    <option value="autocuidado">Autocuidado</option>
+                    <option value="habilidades_academicas">Habilidades Académicas</option>
+                    <option value="conducta">Conducta</option>
+                    <option value="otro">Otro</option>
+                </select>
+            </div>
+            <div style="margin:10px 0;">
+                <label>Peso (prioridad):</label>
+                <select id="gas_peso" style="width:100%; padding:8px; border-radius:6px;">
+                    <option value="1">1 - Estándar</option>
+                    <option value="2" selected>2 - Prioritaria</option>
+                    <option value="3">3 - Crítica</option>
+                </select>
+            </div>
+            <div style="margin:10px 0;">
+                <label>📊 Línea base inicial:</label>
+                <select id="gas_linea_base" style="width:100%; padding:8px; border-radius:6px;">
+                    <option value="-2">🔴 -2: Mucho menos de lo esperado</option>
+                    <option value="-1" selected>🟡 -1: Menos de lo esperado</option>
+                    <option value="0">🟢 0: Nivel esperado (meta)</option>
+                    <option value="1">🔵 +1: Más de lo esperado</option>
+                    <option value="2">🟣 +2: Mucho más de lo esperado</option>
+                </select>
+                <small style="color:#666; display:block; margin-top:5px;">¿En qué nivel está el paciente HOY?</small>
+            </div>
+            <div style="margin:10px 0;">
+                <label>Fecha de evaluación:</label>
+                <input type="date" id="gas_fecha_eval" style="width:100%; padding:8px; border-radius:6px;">
+            </div>
+            <h4 style="margin:15px 0 10px;">📊 Niveles (-2 a +2)</h4>
+            <div id="gas_niveles_container"></div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn-gas" onclick="guardarMetaGAS()" style="flex:1;">✅ Guardar</button>
+                <button class="btn-volver" onclick="cerrarModalMeta()" style="flex:1;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para evaluar meta -->
+    <div id="modal_evaluar" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; align-items:center; justify-content:center;">
+        <div class="container" style="max-width:500px; max-height:90vh; overflow-y:auto;">
+            <h3>📝 Registrar Evaluación</h3>
+            <input type="hidden" id="eval_meta_id">
+            <div style="margin:15px 0;">
+                <label>Tipo de evaluación:</label>
+                <select id="eval_tipo" style="width:100%; padding:8px; border-radius:6px;">
+                    <option value="intermedia">🟡 Evaluación intermedia</option>
+                    <option value="final">✅ Evaluación final</option>
+                </select>
+            </div>
+            <div style="margin:10px 0;">
+                <label>Puntuación lograda:</label>
+                <select id="eval_puntuacion" style="width:100%; padding:8px; border-radius:6px;">
+                    <option value="-2">🔴 -2: Mucho menos de lo esperado</option>
+                    <option value="-1">🟡 -1: Menos de lo esperado</option>
+                    <option value="0" selected>🟢 0: Meta lograda</option>
+                    <option value="1">🔵 +1: Más de lo esperado</option>
+                    <option value="2">🟣 +2: Mucho más de lo esperado</option>
+                </select>
+            </div>
+            <div style="margin:10px 0;">
+                <label>Evidencia / Notas clínicas:</label>
+                <textarea id="eval_evidencia" rows="4" style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc;"></textarea>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn-gas" onclick="guardarEvaluacion()" style="flex:1;">✅ Guardar Evaluación</button>
+                <button class="btn-volver" onclick="document.getElementById('modal_evaluar').style.display='none'" style="flex:1;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ✅ CORRECCIÓN: Auto-abrir modal si viene de la agenda con parámetros URL
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tipo = urlParams.get("tipo");
+        const num = urlParams.get("num");
+        const nombre = urlParams.get("nombre");
+        
+        if (tipo && num) {
+            setTimeout(() => {
+                abrirCrearMeta(tipo, num, nombre || "Paciente");
+            }, 500);
+        }
+    });
+    
+    function abrirCrearMeta(tipo, num, nombre) {
+        document.getElementById("gas_tipo_doc").value = tipo;
+        document.getElementById("gas_num_doc").value = num;
+        document.getElementById("gas_nombre_paciente").textContent = nombre;
+        document.getElementById("gas_descripcion").value = "";
+        document.getElementById("gas_fecha_eval").value = "";
+        document.getElementById("gas_linea_base").value = "-1";
+        
+        const container = document.getElementById("gas_niveles_container");
+        container.innerHTML = "";
+        [-2,-1,0,1,2].forEach(p => {
+            const sugerencia = p === 0 ? "✅ Meta esperada: " : "";
+            container.innerHTML += `
+            <div style="margin:8px 0; display:flex; gap:8px; align-items:start;">
+                <span style="font-weight:bold; min-width:30px;">${p >= 0 ? '+'+p : p}</span>
+                <input type="text" class="gas-nivel" data-p="${p}" placeholder="${sugerencia}Criterio observable..." 
+                       style="flex:1; padding:8px; border-radius:6px; border:1px solid #ccc;">
+            </div>`;
+        });
+        document.getElementById("modal_crear_meta").style.display = "flex";
+    }
+    
+    function cerrarModalMeta() {
+        document.getElementById("modal_crear_meta").style.display = "none";
+    }
+    
+    async function guardarMetaGAS() {
+        const desc = document.getElementById("gas_descripcion").value.trim();
+        const dominio = document.getElementById("gas_dominio").value;
+        const peso = document.getElementById("gas_peso").value;
+        const fecha = document.getElementById("gas_fecha_eval").value;
+        const lineaBase = document.getElementById("gas_linea_base").value;
+        
+        if (!desc || !fecha) { alert("Completa descripción y fecha"); return; }
+        
+        const niveles = [];
+        document.querySelectorAll(".gas-nivel").forEach(inp => {
+            const crit = inp.value.trim();
+            if (crit) niveles.push({puntuacion: parseInt(inp.dataset.p), criterio: crit, metodo: "observacion_directa"});
+        });
+        if (niveles.length < 5) { alert("Define los 5 niveles"); return; }
+        
+        const res = await fetch("/gas/crear", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                tipo_doc: document.getElementById("gas_tipo_doc").value,
+                num_doc: document.getElementById("gas_num_doc").value,
+                descripcion: desc, dominio, peso, fecha_evaluacion: fecha, niveles, linea_base: lineaBase
+            })
+        });
+        const data = await res.json();
+        alert(data.mensaje);
+        if (data.exito) {
+            cerrarModalMeta();
+            cargarMetasPaciente(document.getElementById("gas_tipo_doc").value, document.getElementById("gas_num_doc").value);
+        }
+    }
+    
+    async function cargarMetasPaciente(tipo, num) {
+        const cont = document.getElementById(`metas_${tipo}_${num}`);
+        cont.classList.toggle("oculto");
+        if (cont.innerHTML.trim() && !cont.classList.contains("oculto")) return;
+        
+        const res = await fetch(`/gas/listar/${tipo}/${num}`);
+        const data = await res.json();
+        if (!data.metas || data.metas.length === 0) {
+            cont.innerHTML = "<small style='color:#666;'>Sin metas registradas</small>";
+            return;
+        }
+        let html = "";
+        data.metas.forEach(m => {
+            const cls = m.Estado === "evaluada" ? "meta-item evaluated" : "meta-item";
+            html += `<div class="${cls}"><strong>${m.Descripcion}</strong><br>
+                <small>Dominio: ${m.Dominio} | Peso: ${m.Peso} | Eval: ${m.Fecha_Evaluacion}</small><br>`;
+            m.niveles.forEach(n => {
+                html += `<div class="nivel"><b>${n.puntuacion >= 0 ? '+'+n.puntuacion : n.puntuacion}:</b> ${n.criterio}</div>`;
+            });
+            if (m.Estado === "activa") {
+                html += `<button class="btn-gas" style="margin-top:8px; padding:6px 12px;" onclick="abrirModalEvaluacion('${m.Meta_ID}')">📝 Evaluar</button>`;
+            } else {
+                html += `<small style='color:#28a745; font-weight:bold;'>✅ Evaluada</small>`;
+            }
+            html += `</div>`;
+        });
+        cont.innerHTML = html;
+    }
+    
+    function abrirModalEvaluacion(meta_id) {
+        document.getElementById("eval_meta_id").value = meta_id;
+        document.getElementById("eval_tipo").value = "intermedia";
+        document.getElementById("eval_puntuacion").value = "0";
+        document.getElementById("eval_evidencia").value = "";
+        document.getElementById("modal_evaluar").style.display = "flex";
+    }
+    
+    async function guardarEvaluacion() {
+        const meta_id = document.getElementById("eval_meta_id").value;
+        const tipo = document.getElementById("eval_tipo").value;
+        const puntuacion = document.getElementById("eval_puntuacion").value;
+        const evidencia = document.getElementById("eval_evidencia").value.trim();
+        
+        if (!evidencia) { alert("Agrega notas de la evaluación"); return; }
+        
+        const res = await fetch("/gas/registrar-evaluacion", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({meta_id, tipo_eval: tipo, puntuacion, evidencia})
+        });
+        const data = await res.json();
+        alert(data.mensaje);
+        if (data.exito) {
+            document.getElementById("modal_evaluar").style.display = "none";
+            const cont = document.querySelector(`[id^="metas_"]`);
+            if (cont) {
+                const parts = cont.id.replace("metas_","").split("_");
+                if (parts.length === 2) cargarMetasPaciente(parts[0], parts[1]);
+            }
+        }
+    }
+    
+    async function cargarTscorePaciente(tipo, num) {
+        const cont = document.getElementById(`tscore_${tipo}_${num}`);
+        cont.classList.toggle("oculto");
+        if (cont.innerHTML.trim() && !cont.classList.contains("oculto")) return;
+        
+        const res = await fetch(`/gas/tscore/${tipo}/${num}`);
+        const data = await res.json();
+        
+        if (data.t_score !== null) {
+            let html = `<div class="tscore-card">
+                <h4 style="margin:0 0 10px 0;">📊 Resultado Global GAS</h4>
+                <div class="tscore-value">T = ${data.t_score}</div>
+                <p style="margin:10px 0 0 0; font-weight:500;">${data.interpretacion}</p>
+                <small>Metas evaluadas: ${data.metas_evaluadas} | Peso total: ${data.detalles.sum_w || 0}</small>
+            </div>`;
+            
+            if (data.metas_detalle && data.metas_detalle.length > 0) {
+                html += "<h5 style='margin:15px 0 10px;'>📋 Detalle por meta:</h5>";
+                data.metas_detalle.forEach(meta => {
+                    const color = meta.puntuacion <= -1 ? '#dc3545' : meta.puntuacion === 0 ? '#28a745' : '#007bff';
+                    html += `<div style="background:#f8f9fa; padding:10px; margin:8px 0; border-radius:8px; border-left:4px solid ${color};">
+                        <div style="font-weight:500;">${meta.descripcion}</div>
+                        <small>Peso: ${meta.peso} | Puntuación: <b style="color:${color}">${meta.puntuacion >= 0 ? '+'+meta.puntuacion : meta.puntuacion}</b> | Fecha: ${meta.fecha_eval}</small><br>
+                        <small style="color:#666;">📝 ${meta.evidencia}</small>
+                    </div>`;
+                });
+            }
+            cont.innerHTML = html;
+        } else {
+            cont.innerHTML = "<small style='color:#666;'>No hay metas evaluadas para calcular T-score</small>";
+        }
+    }
+    
+    async function cargarGraficoProgreso(tipo, num) {
+        const cont = document.getElementById(`progreso_${tipo}_${num}`);
+        cont.classList.toggle("oculto");
+        if (cont.querySelector('canvas') && !cont.classList.contains("oculto")) return;
+        
+        const res = await fetch(`/gas/historial/${tipo}/${num}`);
+        const data = await res.json();
+        
+        if (!data.progreso || data.progreso.length === 0) {
+            cont.innerHTML = "<small style='color:#666;'>Sin datos para gráfico</small>";
+            return;
+        }
+        
+        const canvasId = `chart_${tipo}_${num}`;
+        cont.innerHTML = `<canvas id="${canvasId}" height="200"></canvas>`;
+        
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        const labels = data.progreso.map(e => e.fecha);
+        const valores = data.progreso.map(e => e.puntuacion);
+        const colores = data.progreso.map(e => {
+            if (e.puntuacion <= -1) return '#dc3545';
+            if (e.puntuacion === 0) return '#28a745';
+            return '#007bff';
+        });
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Puntuación GAS',
+                    data: valores,
+                    borderColor: '#6f42c1',
+                    backgroundColor: 'rgba(111, 66, 193, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: colores,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        min: -2,
+                        max: 2,
+                        ticks: {
+                            stepSize: 1,
+                            callback: function(value) {
+                                return ['🔴-2','🟡-1','🟢0','🔵+1','🟣+2'][value+2];
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const idx = context.dataIndex;
+                                return `Puntuación: ${valores[idx]} | Tipo: ${data.progreso[idx].tipo}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    </script>
+</body>
+</html>

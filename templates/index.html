@@ -1,0 +1,1964 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- ✅ PREVENIR CACHÉ (CRÍTICO) -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Agendamiento-Med Elite</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body {
+background: url('/static/med.jpg') no-repeat center center fixed;
+background-size: cover;
+min-height: 100vh;
+padding: 20px;
+position: relative;
+}
+body::before {
+content: "";
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(255, 255, 255, 0.5);
+z-index: -1;
+}
+.container {
+max-width: 1400px;
+margin: 0 auto;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 25px;
+}
+.column {
+background: white;
+border-radius: 14px;
+padding: 25px;
+box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+transition: transform 0.3s ease;
+}
+.column:hover {
+transform: translateY(-4px);
+}
+h2 {
+color: #004a80;
+margin-bottom: 20px;
+font-weight: 700;
+text-align: center;
+font-size: 24px;
+}
+h3 {
+color: #0066a1;
+margin: 18px 0 12px;
+font-weight: 600;
+font-size: 18px;
+border-bottom: 2px solid #e0f0fa;
+padding-bottom: 6px;
+}
+.form-group {
+margin: 14px 0;
+}
+label {
+display: block;
+margin-bottom: 6px;
+font-weight: 600;
+color: #333;
+font-size: 14px;
+}
+input, select, textarea {
+width: 100%;
+padding: 11px;
+border: 1px solid #ccc;
+border-radius: 8px;
+font-size: 15px;
+transition: border 0.3s, box-shadow 0.3s;
+}
+input:focus, select:focus, textarea:focus {
+outline: none;
+border-color: #007bff;
+box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+button {
+background: linear-gradient(to bottom, #007bff, #0056b3);
+color: white;
+border: none;
+padding: 11px 20px;
+font-size: 15px;
+font-weight: 600;
+border-radius: 10px;
+cursor: pointer;
+transition: all 0.2s ease;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15),
+inset 0 1px 0 rgba(255, 255, 255, 0.3),
+inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+button:hover {
+background: linear-gradient(to bottom, #0069d9, #004a99);
+transform: translateY(-2px);
+box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2),
+inset 0 1px 0 rgba(255, 255, 255, 0.3),
+inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+}
+button:active {
+transform: translateY(1px);
+box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15),
+inset 0 1px 0 rgba(0, 0, 0, 0.2),
+inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+}
+.btn-nueva {
+background: linear-gradient(to bottom, #6c757d, #545b62);
+}
+.btn-nueva:hover {
+background: linear-gradient(to bottom, #5a6268, #444b50);
+}
+.btn-admin {
+background: linear-gradient(to bottom, #28a745, #218838);
+font-weight: bold;
+}
+.btn-admin:hover {
+background: linear-gradient(to bottom, #218838, #1e7e34);
+}
+.btn-whatsapp {
+background: linear-gradient(to bottom, #25d366, #1da851);
+font-weight: bold;
+}
+.btn-whatsapp:hover {
+background: linear-gradient(to bottom, #1da851, #1a9a49);
+}
+.btn-reportes {
+background: linear-gradient(to bottom, #6f42c1, #5a32a3);
+font-weight: bold;
+}
+.btn-reportes:hover {
+background: linear-gradient(to bottom, #5a32a3, #4a288a);
+}
+.btn-agenda {
+background: linear-gradient(to bottom, #17a2b8, #138496);
+font-weight: bold;
+}
+.btn-agenda:hover {
+background: linear-gradient(to bottom, #138496, #117a8b);
+}
+.btn-corregir {
+background: linear-gradient(to bottom, #ffc107, #e0a800);
+font-weight: bold;
+}
+.btn-corregir:hover {
+background: linear-gradient(to bottom, #e0a800, #d39e00);
+}
+.oculto {
+display: none;
+}
+.seccion {
+margin: 20px 0;
+}
+.exito {
+background: #d4edda;
+color: #155724;
+padding: 12px;
+border-radius: 10px;
+margin: 12px 0;
+font-weight: 600;
+}
+.error {
+background: #f8d7da;
+color: #721c24;
+padding: 12px;
+border-radius: 10px;
+margin: 12px 0;
+font-weight: 600;
+}
+.progreso {
+background: #e7f3ff;
+color: #004085;
+padding: 12px;
+border-radius: 10px;
+margin: 15px 0;
+font-weight: 600;
+border-left: 4px solid #007bff;
+}
+.servicio-item {
+background: #f8f9fa;
+padding: 12px;
+margin: 12px 0;
+border-radius: 10px;
+border-left: 4px solid #28a745;
+font-weight: 500;
+}
+.agenda-profesional {
+margin-top: 25px;
+}
+.agenda-profesional h4 {
+color: #0066a1;
+margin: 18px 0 10px;
+font-size: 17px;
+}
+#contenedor_agenda_general, #contenedor_agenda_vista {
+display: grid;
+gap: 5px;
+}
+.bloque {
+    padding: 10px 0;
+    text-align: center;
+    border-radius: 8px;
+    color: white;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+    min-height: 55px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.15s ease;
+    /* ✅ EFECTO 3D SENCILLO */
+    box-shadow: 0 4px 0 rgba(0,0,0,0.25),
+                0 5px 10px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.15);
+    position: relative;
+    top: 0;
+}
+
+.bloque:hover:not(.rojo) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 rgba(0,0,0,0.25),
+                0 8px 15px rgba(0,0,0,0.3);
+}
+
+.bloque:active:not(.rojo) {
+    transform: translateY(2px);
+    top: 2px;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.25),
+                0 3px 5px rgba(0,0,0,0.3);
+}
+
+/* ✅ Colores se mantienen igual */
+.verde { background: #28a745; }
+.azul { background: #007bff; }
+.rojo {
+    background: #dc3545;
+    cursor: not-allowed;
+    opacity: 0.85;
+    transform: none !important;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.2) !important;
+}
+.morado {
+    background: #6f42c1;
+    color: white;
+    cursor: pointer;
+}
+.amarillo {
+    background: #FFEB3B;
+    color: #000000;
+    cursor: pointer;
+    border: 2px solid #FBC02D;
+}
+#modal_whatsapp, #contenedor_boton_whatsapp, #contenedor_recordatorios_manana,
+#modal_reasignacion, #modal_reasignacion_individual, #modal_reasignar_bloque {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0,0,0,0.6);
+z-index: 1000;
+display: none;
+align-items: center;
+justify-content: center;
+}
+.modal-content {
+background: white;
+padding: 25px;
+border-radius: 12px;
+max-width: 500px;
+width: 90%;
+}
+.grupo-botones {
+display: flex;
+gap: 10px;
+margin: 15px 0;
+flex-wrap: wrap;
+}
+.copyright-footer {
+position: fixed;
+bottom: 15px;
+right: 15px;
+background: rgba(0, 74, 128, 0.92);
+color: white;
+padding: 8px 15px;
+border-radius: 6px;
+box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+font-size: 13px;
+z-index: 1000;
+}
+.copyright-content {
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.copyright-name {
+font-weight: bold;
+}
+.copyright-version {
+font-size: 12px;
+opacity: 0.9;
+}
+/* ✅ CSS RESPONSIVE PARA CELULARES (NUEVO) */
+@media (max-width: 768px) {
+body {
+padding: 10px !important;
+font-size: 14px;
+}
+.container {
+grid-template-columns: 1fr !important;
+gap: 15px !important;
+}
+.column {
+padding: 15px !important;
+border-radius: 10px !important;
+}
+h2 {
+font-size: 20px !important;
+margin-bottom: 15px !important;
+}
+h3 {
+font-size: 16px !important;
+margin: 12px 0 10px !important;
+}
+.form-group {
+margin: 10px 0 !important;
+}
+label {
+font-size: 13px !important;
+margin-bottom: 5px !important;
+}
+/* ✅ Inputs grandes para evitar zoom en iOS */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+font-size: 16px !important; /* Evita zoom automático en iOS */
+padding: 12px !important;
+min-height: 44px !important; /* Tamaño táctil mínimo */
+}
+button {
+font-size: 16px !important;
+padding: 12px 20px !important;
+min-height: 44px !important; /* Tamaño táctil mínimo */
+border-radius: 8px !important;
+}
+.bloque {
+min-height: 50px !important;
+font-size: 12px !important;
+padding: 8px 0 !important;
+}
+.servicio-item {
+padding: 10px !important;
+font-size: 13px !important;
+}
+.copyright-footer {
+bottom: 10px !important;
+right: 10px !important;
+font-size: 11px !important;
+padding: 6px 12px !important;
+}
+.copyright-version {
+font-size: 11px !important;
+}
+/* Botones principales en móvil */
+.btn-admin, .btn-whatsapp, .btn-reportes, .btn-agenda, .btn-corregir {
+width: 100% !important;
+margin: 5px 0 !important;
+padding: 12px !important;
+font-size: 15px !important;
+}
+/* Ocultar columnas no esenciales en móvil */
+.ocultar-movil {
+display: none !important;
+}
+/* Modal adaptable */
+.modal-content {
+padding: 20px !important;
+margin: 10px !important;
+}
+}
+/* ✅ Scroll suave en móviles */
+html {
+scroll-behavior: smooth;
+}
+/* ✅ Prevención de zoom en iOS */
+@media (max-width: 480px) {
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+input[type="tel"] {
+font-size: 16px !important;
+}
+}
+/* ✅ Toques más responsivos */
+a, button, .bloque {
+-webkit-tap-highlight-color: rgba(0,0,0,0.1);
+tap-highlight-color: rgba(0,0,0,0.1);
+}
+/* ✅ Scroll suave en contenedores */
+::-webkit-scrollbar {
+width: 6px;
+}
+::-webkit-scrollbar-track {
+background: #f1f1f1;
+border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+background: #667eea;
+border-radius: 10px;
+}
+</style>
+</head>
+<body>
+<!-- ✅ Botones principales -->
+<div style="text-align: center; margin-bottom: 20px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+<button class="btn-admin" onclick="location.href='/admin'">🔧 Administración de Catálogos</button>
+<button class="btn-whatsapp" onclick="abrirModalWhatsApp()">📤 Enviar Agendas Diarias por WhatsApp</button>
+<button class="btn-whatsapp" onclick="enviarRecordatoriosManana()">📲 Recordatorios para Mañana</button>
+<button class="btn-reportes" onclick="location.href='/reportes'">📊 Reportes</button>
+<button class="btn-reportes" onclick="location.href='/dashboard'">📊 Dashboard Estadístico</button>
+<button class="btn-reportes" onclick="verPacientesConGAS()" id="btn_pacientes_gas">🎯 Pacientes con Escala GAS</button>
+<button class="btn-agenda" onclick="verAgendaDelDia()">👁️ Ver Agenda del Día</button>
+<button class="btn-admin" onclick="abrirReasignacion()">🔄 Reasignar Profesional</button>
+<button class="btn-nueva" onclick="location.href='/logout'" style="background: linear-gradient(to bottom, #dc3545, #c82333);">
+🚪 Cerrar Sesión
+</div>
+<div class="container">
+<!-- Columna Izquierda: Datos del paciente -->
+<div class="column">
+<h2>📋 Datos del Paciente</h2>
+<div id="contenedor_nueva_cita" class="oculto">
+<button class="btn-nueva" onclick="nuevaCita()">🔄 Nueva Cita</button>
+</div>
+<div class="seccion">
+<h3>1. Validar Paciente</h3>
+<div class="form-group">
+<label>Tipo de Documento:</label>
+<select id="tipo_doc">
+<option value="CC">CC</option>
+<option value="TI">TI</option>
+<option value="CE">CE</option>
+<option value="RC">RC</option>
+<option value="PA">PA</option>
+<option value="PT">PT</option>
+<option value="SC">SC</option>
+<option value="CN">CN</option>
+</select>
+</div>
+<div class="form-group">
+<label>Número de Documento:</label>
+<input type="text" id="num_doc" placeholder="Ej: 1095701378">
+</div>
+<button onclick="validarPaciente()">🔍 Validar Paciente</button>
+<div id="resultado_paciente"></div>
+</div>
+<div id="seccion_dx" class="seccion oculto">
+<h3>2. Diagnóstico (Dx)</h3>
+<div class="form-group">
+<label>Código Dx:</label>
+<input type="text" id="dx_input" placeholder="Ej: F840">
+</div>
+<div class="grupo-botones">
+<button onclick="validarDx()">🔍 Validar Dx</button>
+<button class="btn-corregir" onclick="limpiarDx()" id="btn_corregir_dx" style="display: none;">
+✏️ Corregir Dx
+</button>
+</div>
+<div id="resultado_dx"></div>
+</div>
+<div id="seccion_contacto" class="seccion oculto">
+<h3>3. Datos de Contacto</h3>
+<div class="form-group">
+<label>Celular:</label>
+<input type="text" id="celular" placeholder="3001234567">
+</div>
+<div class="form-group">
+<label>Email:</label>
+<input type="email" id="email" placeholder="ejemplo@correo.com">
+</div>
+</div>
+</div>
+<!-- Columna Derecha: Servicios y Agenda -->
+<div class="column">
+<h2>⚙️ Gestión de Servicios</h2>
+<div id="seccion_servicio" class="seccion oculto">
+<h3>4. Agregar Servicio</h3>
+<div class="form-group">
+<label>Código CUPS:</label>
+<input type="text" id="cups_input" placeholder="Ej: 937000">
+<div class="grupo-botones">
+<div id="resultado_servicio"></div>
+<button class="btn-corregir" onclick="limpiarServicio()" id="btn_corregir_servicio" style="display: none; margin-left: 10px;">
+✏️ Corregir Servicio
+</button>
+</div>
+</div>
+<div id="parametros" class="oculto">
+<div class="form-group">
+<label>Tipo de asignación:</label>
+<select id="tipo_asignacion">
+<option value="semanal">📅 Bloque semanal (varias semanas)</option>
+<option value="concentrada">🗓️ Agenda concentrada (un solo día)</option>
+</select>
+</div>
+<!-- Parámetros para modo SEMANAL -->
+<div id="campos_semanal">
+<div class="form-group">
+<label>Cantidad total de sesiones:</label>
+<input type="number" id="cantidad" min="1" placeholder="Ej: 48">
+</div>
+<div class="form-group">
+<label>Sesiones por visita:</label>
+<input type="number" id="sesiones_por_visita" min="1" max="6" value="1" placeholder="Ej: 3">
+</div>
+<div class="form-group">
+<label>Frecuencia semanal:</label>
+<input type="number" id="frecuencia" min="1" max="7" placeholder="Ej: 1">
+</div>
+<div class="form-group">
+<label>Duración (meses):</label>
+<input type="number" id="duracion" min="1" placeholder="Ej: 4">
+</div>
+</div>
+<!-- Parámetros para modo CONCENTRADA -->
+<div id="campos_concentrada" class="oculto">
+<div class="form-group">
+<label>Número de sesiones en el día:</label>
+<input type="number" id="sesiones_concentradas" min="1" max="6" placeholder="Ej: 3">
+</div>
+<small style="color:#666; display:block; margin-top:5px;">
+Se asignarán en bloques consecutivos a partir de la hora seleccionada.
+</small>
+</div>
+<div class="form-group">
+<label>Observación:</label>
+<textarea id="observacion" rows="2" placeholder="Ej: 2 veces por semana"></textarea>
+</div>
+<div id="progreso_contenedor" class="oculto progreso"></div>
+<div class="form-group oculto" id="contenedor_fecha_asignacion">
+<label>📅 Seleccione fecha de inicio para agendar:</label>
+<input type="date" id="fecha_asignacion">
+<small style="color:#666; display:block; margin-top:5px;">Formato: AAAA-MM-DD (ej: 2025-11-24)</small>
+<button onclick="cargarAgendaDesdeInput()">📤 Ver Agenda General</button>
+</div>
+<button onclick="agregarYSolicitarHorario()">✅ Agregar y Asignar Horario</button>
+</div>
+<div id="lista_servicios"></div>
+</div>
+<div id="seccion_agenda_general" class="seccion oculto">
+<h3>📅 Agenda General para: <span id="fecha_seleccionada"></span></h3>
+<p>
+<button class="btn-nueva" onclick="volverAgregacion()">← Volver</button>
+<button onclick="enviarWhatsApp()" class="btn-whatsapp" style="width:auto; padding:8px 12px;">📱 Enviar Agenda Individual</button>
+</p>
+<div id="contenedor_agenda_general"></div>
+</div>
+</div>
+<!-- Vista de Agenda del Día -->
+<div id="seccion_agenda_vista" class="column oculto">
+<h2>👁️ Agenda del Día</h2>
+<div class="form-group">
+<label>Fecha:</label>
+<input type="date" id="fecha_cambio_agenda" onchange="cargarAgendaVista()" style="width:100%; padding:8px; border-radius:6px;">
+<small style="color:#666; display:block; margin-top:5px;">Formato: AAAA-MM-DD (ej: 2025-11-10)</small>
+</div>
+<div class="form-group">
+<label>Filtrar por profesional (opcional):</label>
+<select id="filtro_profesional" onchange="cargarAgendaVista()">
+<option value="">— Todos los profesionales —</option>
+</select>
+</div>
+<button onclick="cargarAgendaVista()" class="btn-agenda" style="margin: 15px 0; width: 100%; padding: 10px; background: linear-gradient(to bottom, #17a2b8, #138496);">
+🔄 Actualizar Agenda
+</button>
+<div id="contenedor_agenda_vista"></div>
+<button class="btn-nueva" onclick="ocultarAgendaVista()">← Cerrar Vista</button>
+</div>
+</div>
+<!-- Modales existentes -->
+<div id="modal_reasignacion">
+<div class="modal-content">
+<h3>🔄 Reasignar Citas de Profesional</h3>
+<div class="form-group">
+<label>Profesional que se retira:</label>
+<input type="text" id="prof_saliente" placeholder="Nombre exacto">
+</div>
+<div class="form-group">
+<label>Nuevo profesional:</label>
+<select id="prof_nuevo"></select>
+</div>
+<button class="btn-admin" onclick="ejecutarReasignacion()">✅ Reasignar Todas las Citas Activas</button>
+<button class="btn-nueva" onclick="cerrarReasignacion()">Cancelar</button>
+</div>
+</div>
+<div id="modal_reasignacion_individual" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:4000; align-items:center; justify-content:center;">
+<div class="modal-content" style="max-width: 550px;">
+<h3>🔄 Reasignar Cita Individual</h3>
+<input type="hidden" id="reasignar_tipo_doc">
+<input type="hidden" id="reasignar_num_doc">
+<input type="hidden" id="reasignar_prof_origen">
+<input type="hidden" id="reasignar_fecha_origen">
+<input type="hidden" id="reasignar_hora_origen">
+<input type="hidden" id="reasignar_cups">
+<div class="form-group">
+<label>Nuevo Profesional:</label>
+<select id="nuevo_profesional" style="width:100%; padding:10px; border-radius:6px;"></select>
+</div>
+<div class="form-group">
+<label>Nueva Fecha:</label>
+<input type="date" id="nueva_fecha" style="width:100%; padding:10px; border-radius:6px;">
+</div>
+<div class="form-group">
+<label>Nueva Hora:</label>
+<select id="nueva_hora" style="width:100%; padding:10px; border-radius:6px;"></select>
+</div>
+<button class="btn-admin" onclick="ejecutarReasignacionIndividual()" style="width:100%; margin-top:10px;">✅ Reasignar Cita</button>
+<button class="btn-nueva" onclick="cerrarModalReasignacionIndividual()" style="width:100%; margin-top:8px;">Cancelar</button>
+</div>
+</div>
+<div id="modal_reasignar_bloque" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:4000; align-items:center; justify-content:center;">
+<div class="modal-content" style="max-width: 500px;">
+<h3>🔄 Reasignar Bloque Terapéutico</h3>
+<input type="hidden" id="rb_tipo_doc">
+<input type="hidden" id="rb_num_doc">
+<input type="hidden" id="rb_cups">
+<input type="hidden" id="rb_prof_origen">
+<div class="form-group">
+<label>Nuevo Profesional:</label>
+<select id="rb_nuevo_profesional" style="width:100%; padding:10px; border-radius:6px;"></select>
+</div>
+<button class="btn-admin" onclick="ejecutarReasignarBloque()" style="width:100%; margin-top:10px;">✅ Reasignar Todo el Bloque</button>
+<button class="btn-nueva" onclick="cerrarModalReasignarBloque()" style="width:100%; margin-top:8px;">Cancelar</button>
+</div>
+</div>
+<div id="modal_whatsapp">
+<div class="modal-content">
+<h3>📤 Enviar Agendas Diarias</h3>
+<div class="form-group">
+<label>Seleccione la fecha:</label>
+<input type="date" id="fecha_whatsapp" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+<small style="color:#666; display:block; margin-top:5px;">Formato: AAAA-MM-DD</small>
+</div>
+<div style="text-align: right; margin-top: 20px;">
+<button class="btn-nueva" onclick="cerrarModalWhatsApp()">Cancelar</button>
+<button class="btn-whatsapp" onclick="enviarAgendasDesdeModal()">📤 Obtener Lista</button>
+</div>
+</div>
+</div>
+<!-- Modal: Pacientes con Escala GAS -->
+<div id="modal_pacientes_gas" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:3000; align-items:center; justify-content:center;">
+    <div class="modal-content" style="max-width: 700px;">
+        <h3>🎯 Pacientes con Escala GAS</h3>
+        <p style="color:#666; margin:10px 0;">Listado de pacientes que tienen metas terapéuticas registradas</p>
+        <div id="contenedor_pacientes_gas" style="max-height:400px; overflow-y:auto; margin:15px 0;"></div>
+        <button class="btn-nueva" onclick="cerrarModalPacientesGAS()" style="width:100%;">Cerrar</button>
+    </div>
+</div>
+
+<!-- CopyrightFooter -->
+<div class="copyright-footer">
+<div class="copyright-content">
+<span>👨‍💻</span>
+<div>
+<div class="copyright-name">© Desarrollado por: Omar Alberto Pachon Pereira</div>
+<div class="copyright-version">Agendamiento-Med Elite v2.0</div>
+</div>
+</div>
+</div>
+<!-- ✅ SCRIPT COMPLETO - CON CORRECCIONES APLICADAS (DEGLUCIÓN = INDIVIDUAL COMO AUTISMO) -->
+<script>
+let paciente = null, dxData = null;
+let servicioTemporal = null;
+let datosPacienteReporte = null;
+// ✅ CAMBIO 1: Variable del rol del usuario (se pasa desde Flask)
+const ROL_USUARIO = "{{ es_profesional|lower }}";  // "true" o "false"
+const mostrar = id => document.getElementById(id).classList.remove("oculto");
+const ocultar = id => document.getElementById(id).classList.add("oculto");
+// === CONTROL DE MODO DE ASIGNACIÓN ===
+document.getElementById("tipo_asignacion").addEventListener("change", function() {
+if (this.value === "semanal") {
+ocultar("campos_concentrada");
+mostrar("campos_semanal");
+} else {
+ocultar("campos_semanal");
+mostrar("campos_concentrada");
+}
+});
+// === FUNCIONES DE REASIGNACIÓN MASIVA ===
+function abrirReasignacion() {
+fetch("/admin/profesionales/lista")
+.then(r => r.json())
+.then(profesionales => {
+const select = document.getElementById("prof_nuevo");
+select.innerHTML = "";
+profesionales.slice(1).forEach(p => {
+const opt = document.createElement("option");
+opt.value = p.split("|")[0];
+opt.textContent = opt.value;
+select.appendChild(opt);
+});
+document.getElementById("modal_reasignacion").style.display = "flex";
+});
+}
+function cerrarReasignacion() {
+document.getElementById("modal_reasignacion").style.display = "none";
+}
+async function ejecutarReasignacion() {
+const saliente = document.getElementById("prof_saliente").value.trim();
+const nuevo = document.getElementById("prof_nuevo").value.trim();
+if (!saliente || !nuevo) {
+alert("Complete ambos campos.");
+return;
+}
+const res = await fetch("/reasignar-profesional", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({profesional_saliente: saliente, profesional_nuevo: nuevo})
+});
+const data = await res.json();
+alert(data.mensaje);
+if (data.exito) {
+cerrarReasignacion();
+}
+}
+// === FUNCIONES DE REASIGNACIÓN INDIVIDUAL ===
+function abrirModalReasignacionIndividual(tipoDoc, numDoc, profOrigen, fechaOrigen, horaOrigen, cups) {
+const contAnterior = document.getElementById("contenedor_temporal_citas");
+if (contAnterior) contAnterior.remove();
+document.getElementById("reasignar_tipo_doc").value = tipoDoc;
+document.getElementById("reasignar_num_doc").value = numDoc;
+document.getElementById("reasignar_prof_origen").value = profOrigen;
+document.getElementById("reasignar_fecha_origen").value = fechaOrigen;
+document.getElementById("reasignar_hora_origen").value = horaOrigen;
+document.getElementById("reasignar_cups").value = cups;
+fetch("/admin/profesionales/lista")
+.then(r => r.json())
+.then(profesionales => {
+const select = document.getElementById("nuevo_profesional");
+select.innerHTML = "";
+profesionales.slice(1).forEach(p => {
+const nombre = p.split("|")[0];
+const opt = document.createElement("option");
+opt.value = nombre;
+opt.textContent = nombre;
+if (nombre !== profOrigen) opt.selected = true;
+select.appendChild(opt);
+});
+});
+const horasSelect = document.getElementById("nueva_hora");
+horasSelect.innerHTML = "";
+const bloques = [
+"07:00","07:30","08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30",
+"13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30"
+];
+bloques.forEach(h => {
+const opt = document.createElement("option");
+opt.value = h;
+opt.textContent = h;
+horasSelect.appendChild(opt);
+});
+const hoy = new Date().toISOString().split('T')[0];
+document.getElementById("nueva_fecha").min = hoy;
+document.getElementById("nueva_fecha").value = fechaOrigen;
+document.getElementById("modal_reasignacion_individual").style.display = "flex";
+}
+function cerrarModalReasignacionIndividual() {
+document.getElementById("modal_reasignacion_individual").style.display = "none";
+}
+async function ejecutarReasignacionIndividual() {
+const data = {
+tipo_doc: document.getElementById("reasignar_tipo_doc").value,
+num_doc: document.getElementById("reasignar_num_doc").value,
+profesional_origen: document.getElementById("reasignar_prof_origen").value,
+fecha_origen: document.getElementById("reasignar_fecha_origen").value,
+hora_origen: document.getElementById("reasignar_hora_origen").value,
+cups: document.getElementById("reasignar_cups").value,
+nuevo_profesional: document.getElementById("nuevo_profesional").value,
+nueva_fecha: document.getElementById("nueva_fecha").value,
+nueva_hora: document.getElementById("nueva_hora").value
+};
+if (!data.nueva_fecha || !data.nueva_hora) {
+alert("Complete la nueva fecha y hora.");
+return;
+}
+const res = await fetch("/reasignar-cita", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify(data)
+});
+const result = await res.json();
+alert(result.mensaje);
+if (result.exito) {
+cerrarModalReasignacionIndividual();
+cargarAgendaVista();
+}
+}
+// === FUNCIONES DE REASIGNACIÓN DE BLOQUE COMPLETO ===
+function abrirReasignarBloqueCompleto(tipoDoc, numDoc, cups, profOrigen) {
+const contAnterior = document.getElementById("contenedor_temporal_citas");
+if (contAnterior) contAnterior.remove();
+document.getElementById("rb_tipo_doc").value = tipoDoc;
+document.getElementById("rb_num_doc").value = numDoc;
+document.getElementById("rb_cups").value = cups;
+document.getElementById("rb_prof_origen").value = profOrigen;
+fetch("/admin/profesionales/lista")
+.then(r => r.json())
+.then(profesionales => {
+const select = document.getElementById("rb_nuevo_profesional");
+select.innerHTML = "";
+profesionales.slice(1).forEach(p => {
+const nombre = p.split("|")[0];
+if (nombre !== profOrigen) {
+const opt = document.createElement("option");
+opt.value = nombre;
+opt.textContent = nombre;
+select.appendChild(opt);
+}
+});
+});
+document.getElementById("modal_reasignar_bloque").style.display = "flex";
+}
+function cerrarModalReasignarBloque() {
+document.getElementById("modal_reasignar_bloque").style.display = "none";
+}
+async function ejecutarReasignarBloque() {
+const data = {
+tipo_doc: document.getElementById("rb_tipo_doc").value,
+num_doc: document.getElementById("rb_num_doc").value,
+cups: document.getElementById("rb_cups").value,
+profesional_origen: document.getElementById("rb_prof_origen").value,
+nuevo_profesional: document.getElementById("rb_nuevo_profesional").value
+};
+if (!data.nuevo_profesional) {
+alert("Seleccione un nuevo profesional.");
+return;
+}
+const res = await fetch("/reasignar-bloque", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify(data)
+});
+const result = await res.json();
+alert(result.mensaje);
+if (result.exito) {
+cerrarModalReasignarBloque();
+cargarAgendaVista();
+}
+}
+// === Resto del script original ===
+function nuevaCita() {
+if (!confirm("¿Iniciar nueva cita?")) return;
+paciente = null; dxData = null; servicioTemporal = null; datosPacienteReporte = null;
+document.getElementById("tipo_doc").value = "CC";
+document.getElementById("num_doc").value = "";
+document.getElementById("dx_input").value = "";
+document.getElementById("celular").value = "";
+document.getElementById("email").value = "";
+document.getElementById("cups_input").value = "";
+document.getElementById("resultado_paciente").innerHTML = "";
+document.getElementById("resultado_dx").innerHTML = "";
+document.getElementById("lista_servicios").innerHTML = "";
+document.getElementById("progreso_contenedor").innerHTML = "";
+ocultar("seccion_dx");
+ocultar("seccion_contacto");
+ocultar("seccion_servicio");
+ocultar("seccion_agenda_general");
+ocultar("contenedor_nueva_cita");
+ocultar("contenedor_fecha_asignacion");
+ocultar("seccion_agenda_vista");
+document.getElementById("btn_corregir_dx").style.display = "none";
+document.getElementById("btn_corregir_servicio").style.display = "none";
+const contBoton = document.getElementById("contenedor_boton_reporte_pdf");
+if (contBoton) contBoton.remove();
+}
+async function validarPaciente() {
+const tipo = document.getElementById("tipo_doc").value;
+const num = document.getElementById("num_doc").value.trim();
+if (!num) { alert("Ingrese número."); return; }
+const res = await fetch("/validar-paciente", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({tipo_doc: tipo, num_doc: num})
+});
+const data = await res.json();
+const div = document.getElementById("resultado_paciente");
+if (data.existe) {
+div.className = "exito";
+div.innerHTML = `✅ Paciente: ${data.nombre_completo} (${data.edad || "?"} años)`;
+paciente = data;
+mostrar("seccion_dx");
+mostrar("contenedor_nueva_cita");
+} else {
+div.className = "error";
+div.innerHTML = `❌ ${data.error}`;
+}
+}
+async function validarDx() {
+const dx = document.getElementById("dx_input").value.trim().toUpperCase();
+if (!dx) { alert("Ingrese Dx."); return; }
+const res = await fetch("/validar-dx", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({dx})
+});
+const data = await res.json();
+const div = document.getElementById("resultado_dx");
+if (data.valido) {
+div.className = "exito";
+div.innerHTML = `✅ Dx: ${data.descripcion}`;
+dxData = data;
+mostrar("seccion_contacto");
+mostrar("seccion_servicio");
+document.getElementById("btn_corregir_dx").style.display = "block";
+} else {
+div.className = "error";
+div.innerHTML = `❌ ${data.descripcion}`;
+document.getElementById("btn_corregir_dx").style.display = "none";
+}
+}
+async function validarServicio() {
+const cups = document.getElementById("cups_input").value.trim();
+if (!cups) {
+document.getElementById("btn_corregir_servicio").style.display = "none";
+document.getElementById("resultado_servicio").innerHTML = "";
+return;
+}
+const res = await fetch("/validar-servicio", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({cups})
+});
+const data = await res.json();
+const div = document.getElementById("resultado_servicio");
+if (data.valido) {
+div.className = "exito";
+div.innerHTML = `✅ ${data.nombre}`;
+if (data.es_terapia) {
+mostrar("parametros");
+} else {
+servicioTemporal = {
+cups: cups,
+nombre: data.nombre,
+cantidad_total: 1,
+frecuencia_semanal: 1,
+duracion_meses: 1,
+observacion: ""
+};
+mostrar("contenedor_fecha_asignacion");
+}
+document.getElementById("btn_corregir_servicio").style.display = "block";
+servicioTemporal = {
+cups: cups,
+nombre: data.nombre,
+cantidad_total: "",
+frecuencia_semanal: "",
+duracion_meses: "",
+observacion: ""
+};
+} else {
+div.className = "error";
+div.innerHTML = `❌ ${data.nombre}`;
+document.getElementById("btn_corregir_servicio").style.display = "none";
+servicioTemporal = null;
+}
+}
+document.getElementById("cups_input").addEventListener("blur", validarServicio);
+document.getElementById("cups_input").addEventListener("keyup", function() {
+if (this.value.trim() === "") {
+document.getElementById("resultado_servicio").innerHTML = "";
+document.getElementById("btn_corregir_servicio").style.display = "none";
+servicioTemporal = null;
+ocultar("parametros");
+ocultar("contenedor_fecha_asignacion");
+}
+});
+async function mostrarProgreso() {
+const cups = document.getElementById("cups_input").value.trim();
+const total = document.getElementById("cantidad").value;
+if (!cups || !total || !paciente) return;
+const res = await fetch("/progreso-terapia", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({
+tipo_doc: paciente.tipo_doc,
+num_doc: paciente.num_doc,
+cups: cups,
+total: total
+})
+});
+const data = await res.json();
+if (data.total) {
+const pendientes = data.pendientes;
+document.getElementById("progreso_contenedor").innerHTML =
+`✅ ${data.realizadas}/${data.total} sesiones agendadas | Faltan: ${pendientes}`;
+mostrar("progreso_contenedor");
+}
+}
+document.getElementById("cantidad").addEventListener("input", mostrarProgreso);
+function agregarYSolicitarHorario() {
+const tipoAsignacion = document.getElementById("tipo_asignacion").value;
+const cupsDiv = document.getElementById("resultado_servicio").textContent;
+if (!cupsDiv.includes("✅")) {
+alert("Valide primero el servicio.");
+return;
+}
+if (tipoAsignacion === "semanal") {
+const cantidad = document.getElementById("cantidad").value;
+const sesionesPorVisita = document.getElementById("sesiones_por_visita").value || "1";
+const frecuencia = document.getElementById("frecuencia").value;
+const duracion = document.getElementById("duracion").value;
+if (!cantidad || !frecuencia || !duracion) {
+alert("Complete todos los campos del bloque semanal.");
+return;
+}
+if (parseInt(cantidad) % parseInt(sesionesPorVisita) !== 0) {
+alert("La cantidad total debe ser múltiplo de las sesiones por visita.");
+return;
+}
+servicioTemporal = {
+modo: "semanal",
+cups: document.getElementById("cups_input").value.trim(),
+nombre: cupsDiv.replace("✅ ", ""),
+cantidad_total: parseInt(cantidad),
+sesiones_por_visita: parseInt(sesionesPorVisita),
+frecuencia_semanal: parseInt(frecuencia),
+duracion_meses: parseInt(duracion),
+observacion: document.getElementById("observacion").value
+};
+} else {
+const n = parseInt(document.getElementById("sesiones_concentradas").value);
+if (!n || n < 1) {
+alert("Indique el número de sesiones para la agenda concentrada.");
+return;
+}
+servicioTemporal = {
+modo: "concentrada",
+cups: document.getElementById("cups_input").value.trim(),
+nombre: cupsDiv.replace("✅ ", ""),
+cantidad_total: n,
+observacion: document.getElementById("observacion").value
+};
+}
+mostrar("contenedor_fecha_asignacion");
+}
+function cargarAgendaDesdeInput() {
+const fecha = document.getElementById("fecha_asignacion").value;
+if (!fecha) {
+alert("Seleccione una fecha.");
+return;
+}
+const hoy = new Date().toISOString().split('T')[0];
+if (fecha < hoy) {
+alert("No se puede agendar en fechas pasadas.");
+return;
+}
+document.getElementById("fecha_seleccionada").textContent = fecha;
+mostrar("seccion_agenda_general");
+ocultar("seccion_servicio");
+ocultar("contenedor_fecha_asignacion");
+cargarAgendaGeneral(fecha);
+}
+function cargarAgendaGeneral(fecha) {
+fetch("/agenda-general", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({fecha: fecha})
+})
+.then(response => response.json())
+.then(data => {
+if (data.error) {
+document.getElementById("contenedor_agenda_general").innerHTML = `<div class="error">${data.error}</div>`;
+return;
+}
+let html = "";
+for (const profesional in data.agenda) {
+html += `<div class="agenda-profesional">`;
+html += `<h4>${profesional}</h4>`;
+html += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 6px;">`;
+data.agenda[profesional].forEach(bloque => {
+const disabled = bloque.color === 'rojo' ? 'style="pointer-events:none;"' : '';
+html += `
+<div class="bloque ${bloque.color}"
+onclick="asignarDesdeAgendaGeneral('${profesional}','${fecha}','${bloque.hora}')"
+${disabled}>
+<div>${bloque.hora}</div>
+<div style="font-size:11px;">${bloque.ocupados}/2</div>
+</div>`;
+});
+html += `</div></div>`;
+}
+document.getElementById("contenedor_agenda_general").innerHTML = html;
+})
+.catch(error => {
+console.error("Error:", error);
+document.getElementById("contenedor_agenda_general").innerHTML = `<div class="error">Error al cargar la agenda.</div>`;
+});
+}
+function volverAgregacion() {
+mostrar("seccion_servicio");
+mostrar("contenedor_nueva_cita");
+ocultar("seccion_agenda_general");
+}
+// ✅ FUNCIÓN MODIFICADA: Deglución = Individual como Autismo
+function asignarDesdeAgendaGeneral(profesional, fecha, hora) {
+if (!servicioTemporal) return;
+const dxPaciente = dxData?.dx_codigo?.toUpperCase() || "";
+const cupsPaciente = servicioTemporal?.cups || "";
+const esAutismoNuevo = dxPaciente === "F840";
+const esDeglucionNuevo = cupsPaciente === "937203";  // ✅ AGREGADO: Verificar deglución
+const esIndividualNuevo = esAutismoNuevo || esDeglucionNuevo;  // ✅ AMBOS SON INDIVIDUALES
+fetch("/estado-agenda", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({profesional, fecha})
+})
+.then(r => r.json())
+.then(data => {
+if (data.error) {
+alert("Error al verificar disponibilidad: " + data.error);
+return;
+}
+const estadoHora = data.estado.find(b => b.hora === hora);
+if (!estadoHora) {
+alert("No se pudo verificar el estado del horario.");
+return;
+}
+const { ocupados, tiene_autismo, tiene_deglucion } = estadoHora;  // ✅ OBTENER AMBAS BANDERAS
+const tieneIndividualExistente = tiene_autismo || tiene_deglucion;  // ✅ VERIFICAR AMBOS
+// ✅ REGLA: Si el nuevo paciente es individual (autismo o deglución), requiere horario vacío
+if (esIndividualNuevo && ocupados > 0) {
+alert("❌ El paciente requiere sesión individual (Autismo F840 o Deglución 937203).\nEl horario seleccionado ya está ocupado. Por favor elija un horario vacío (verde).");
+return;
+}
+// ✅ REGLA: Si ya hay paciente individual en el slot, no permitir otro
+if (tieneIndividualExistente && !esIndividualNuevo) {
+if (!confirm("❗ ATENCIÓN:\nEste horario ya tiene un paciente que requiere sesión individual (Autismo/Deglución).\nPor protocolo clínico, debe ser sesión exclusiva.\n¿Está seguro de que desea asignar otro paciente aquí?")) {
+return;
+}
+}
+if (servicioTemporal.modo === "concentrada") {
+const servicios = [];
+for (let i = 0; i < servicioTemporal.cantidad_total; i++) {
+servicios.push({
+cups: servicioTemporal.cups,
+nombre: servicioTemporal.nombre
+});
+}
+fetch("/guardar-citas-concentradas", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({
+paciente: paciente,
+dx: dxData,
+celular: document.getElementById("celular").value.trim(),
+email: document.getElementById("email").value.trim(),
+servicios: servicios,
+profesional: profesional,
+fecha: fecha,
+hora_inicio: hora
+})
+})
+.then(r => r.json())
+.then(data => {
+alert(data.mensaje);
+if (data.exito) {
+const lista = document.getElementById("lista_servicios");
+const item = document.createElement("div");
+item.className = "servicio-item";
+item.innerHTML = `${servicioTemporal.nombre} → ${profesional}<br><small>${servicioTemporal.cantidad_total} sesiones consecutivas el ${fecha}</small>`;
+lista.appendChild(item);
+datosPacienteReporte = { tipo_doc: paciente.tipo_doc, num_doc: paciente.num_doc };
+mostrarBotonReportePDF();
+volverAgregacion();
+resetearCamposServicio();
+}
+});
+} else {
+const payloadBase = {
+paciente: paciente,
+dx: dxData,
+celular: document.getElementById("celular").value.trim(),
+email: document.getElementById("email").value.trim(),
+servicio: servicioTemporal,
+profesional: profesional,
+hora: hora,
+fecha_inicio: fecha
+};
+fetch("/guardar-cita-bloque", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify(payloadBase)
+})
+.then(r => r.json())
+.then(data => {
+alert(data.mensaje);
+if (data.exito) {
+const lista = document.getElementById("lista_servicios");
+const item = document.createElement("div");
+item.className = "servicio-item";
+item.innerHTML = `${servicioTemporal.nombre} → ${profesional}<br><small>${servicioTemporal.cantidad_total} sesiones en ${servicioTemporal.cantidad_total / servicioTemporal.sesiones_por_visita} visitas</small>`;
+lista.appendChild(item);
+mostrarProgreso();
+datosPacienteReporte = { tipo_doc: paciente.tipo_doc, num_doc: paciente.num_doc };
+mostrarBotonReportePDF();
+volverAgregacion();
+resetearCamposServicio();
+} else if (data.sugerir_busqueda) {
+const contenedor = document.getElementById("seccion_agenda_general");
+let botonExistente = document.getElementById("btn_buscar_viable");
+if (!botonExistente) {
+const btn = document.createElement("button");
+btn.id = "btn_buscar_viable";
+btn.className = "btn-corregir";
+btn.style.marginTop = "15px";
+btn.textContent = "🔍 Buscar horario viable para todo el bloque";
+btn.onclick = () => buscarHorarioViable(profesional, fecha, servicioTemporal);
+contenedor.appendChild(btn);
+}
+}
+});
+}
+})
+.catch(error => {
+console.error("Error al verificar agenda:", error);
+alert("❌ Error de conexión al verificar disponibilidad.");
+});
+}
+function resetearCamposServicio() {
+document.getElementById("cups_input").value = "";
+document.getElementById("resultado_servicio").innerHTML = "";
+document.getElementById("cantidad").value = "";
+document.getElementById("frecuencia").value = "";
+document.getElementById("duracion").value = "";
+document.getElementById("observacion").value = "";
+document.getElementById("progreso_contenedor").innerHTML = "";
+ocultar("parametros");
+document.getElementById("btn_corregir_servicio").style.display = "none";
+servicioTemporal = null;
+}
+function buscarHorarioViable(profesional, fechaInicio, servicio) {
+if (!paciente || !dxData || !servicio) {
+alert("❌ Datos incompletos.");
+return;
+}
+const btn = document.getElementById("btn_buscar_viable");
+if (btn) btn.disabled = true;
+fetch("/buscar-horario-viable", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({
+paciente: paciente,
+dx: dxData,
+servicio: servicio,
+profesional: profesional,
+fecha_inicio: fechaInicio
+})
+})
+.then(r => r.json())
+.then(data => {
+if (btn) btn.remove();
+if (data.exito) {
+if (confirm(data.mensaje)) {
+const payload = {
+paciente: paciente,
+dx: dxData,
+celular: document.getElementById("celular").value.trim(),
+email: document.getElementById("email").value.trim(),
+servicio: servicio,
+profesional: profesional,
+hora: data.hora_sugerida,
+fecha_inicio: fechaInicio
+};
+fetch("/guardar-cita-bloque", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify(payload)
+})
+.then(r => r.json())
+.then(res => {
+alert(res.mensaje);
+if (res.exito) {
+const lista = document.getElementById("lista_servicios");
+const item = document.createElement("div");
+item.className = "servicio-item";
+item.innerHTML = `${servicio.nombre} → ${profesional}<br><small>${servicio.cantidad_total} sesiones desde ${fechaInicio} (${data.hora_sugerida})</small>`;
+lista.appendChild(item);
+mostrarProgreso();
+datosPacienteReporte = { tipo_doc: paciente.tipo_doc, num_doc: paciente.num_doc };
+mostrarBotonReportePDF();
+volverAgregacion();
+resetearCamposServicio();
+}
+});
+}
+} else {
+alert(data.mensaje);
+}
+})
+.catch(err => {
+console.error(err);
+alert("❌ Error al buscar horario alternativo.");
+if (btn) btn.remove();
+});
+}
+function enviarWhatsApp() {
+const profesional = document.querySelector("#seccion_agenda_general h3").textContent.split("para: ")[1];
+const fecha = document.getElementById("fecha_seleccionada").textContent;
+if (!profesional || !fecha) {
+alert("No hay profesional o fecha seleccionada.");
+return;
+}
+fetch("/whatsapp/mensaje", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({profesional, fecha})
+})
+.then(r => r.json())
+.then(data => {
+if (data.exito) {
+const url = `https://wa.me/${data.celular}?text=${encodeURIComponent(data.mensaje)}`;
+window.open(url, "_blank");
+} else {
+alert("Error: " + data.mensaje);
+}
+});
+}
+function abrirModalWhatsApp() {
+document.getElementById("fecha_whatsapp").value = new Date().toISOString().split('T')[0];
+document.getElementById("modal_whatsapp").style.display = "flex";
+}
+function cerrarModalWhatsApp() {
+document.getElementById("modal_whatsapp").style.display = "none";
+}
+function enviarAgendasDesdeModal() {
+const fecha = document.getElementById("fecha_whatsapp").value;
+if (!fecha) {
+alert("Seleccione una fecha.");
+return;
+}
+fetch("/whatsapp/agenda-diaria", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({fecha: fecha})
+})
+.then(r => r.json())
+.then(data => {
+cerrarModalWhatsApp();
+if (data.exito && data.mensajes && data.mensajes.length > 0) {
+const contenedor = document.createElement("div");
+contenedor.id = "contenedor_boton_whatsapp";
+contenedor.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; display:flex; align-items:center; justify-content:center;";
+const contenido = document.createElement("div");
+contenido.className = "modal-content";
+const titulo = document.createElement("h3");
+titulo.textContent = `📤 Agendas listas para enviar (${data.fecha})`;
+const lista = document.createElement("div");
+const cerrarBtn = document.createElement("button");
+cerrarBtn.className = "btn-nueva";
+cerrarBtn.textContent = "Cerrar";
+cerrarBtn.onclick = () => contenedor.remove();
+contenido.appendChild(titulo);
+contenido.appendChild(lista);
+contenido.appendChild(cerrarBtn);
+contenedor.appendChild(contenido);
+document.body.appendChild(contenedor);
+data.mensajes.forEach(m => {
+const btn = document.createElement("button");
+btn.className = "btn-whatsapp";
+btn.textContent = `📤 Enviar a ${m.profesional}`;
+btn.style.display = "block";
+btn.style.margin = "8px 0";
+btn.style.width = "100%";
+btn.onclick = () => {
+const url = `https://wa.me/${m.celular}?text=${encodeURIComponent(m.mensaje)}`;
+window.open(url, "_blank");
+};
+lista.appendChild(btn);
+});
+} else {
+alert("❌ " + (data.mensaje || "No hay profesionales con agenda en esta fecha."));
+}
+})
+.catch(err => {
+console.error("Error:", err);
+alert("Error al cargar las agendas.");
+});
+}
+function verAgendaDelDia() {
+const hoy = new Date().toISOString().split('T')[0];
+document.getElementById("fecha_cambio_agenda").value = hoy;
+fetch("/admin/profesionales/lista")
+.then(r => r.json())
+.then(profesionales => {
+const select = document.getElementById("filtro_profesional");
+select.innerHTML = '<option value="">— Todos los profesionales —</option>';
+profesionales.slice(1).forEach(p => {
+const nombre = p.split("|")[0];
+const opt = document.createElement("option");
+opt.value = nombre;
+opt.textContent = nombre;
+select.appendChild(opt);
+});
+});
+cargarAgendaVista();
+mostrar("seccion_agenda_vista");
+ocultar("seccion_servicio");
+ocultar("seccion_agenda_general");
+}
+function ocultarAgendaVista() {
+ocultar("seccion_agenda_vista");
+if (paciente && dxData) {
+mostrar("seccion_servicio");
+}
+}
+// ✅ FUNCIÓN MODIFICADA: Leyenda actualizada con Deglución
+function cargarAgendaVista() {
+const fecha = document.getElementById("fecha_cambio_agenda").value;
+const profesional = document.getElementById("filtro_profesional").value;
+if (!fecha) {
+document.getElementById("contenedor_agenda_vista").innerHTML = `<div class="error">Por favor seleccione una fecha válida.</div>`;
+return;
+}
+document.getElementById("contenedor_agenda_vista").innerHTML = "<p>Cargando agenda...</p>";
+const endpoint = profesional ? "/agenda-filtrada" : "/agenda-general";
+const payload = profesional
+? { fecha: fecha, profesional: profesional }
+: { fecha: fecha };
+fetch(endpoint, {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify(payload)
+})
+.then(response => response.json())
+.then(data => {
+if (data.error) {
+throw new Error(data.error);
+}
+let html = `<h3>📅 Agenda del Día - ${fecha}</h3>`;
+if (profesional) {
+html += `<p style="background: #e7f3ff; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-weight: bold; color: #004a80;">
+👤 Filtrado por: <strong>${profesional}</strong>
+</p>`;
+}
+// ✅ LEYENDA ACTUALIZADA: Deglución = Individual como Autismo
+html += `<p style="background: #e7f3ff; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+<strong>💡 Cómo leer la agenda:</strong>
+<span style="background: #28a745; color: white; padding: 2px 8px; border-radius: 4px; margin: 0 5px;">Verde</span> = Disponible,
+<span style="background: #007bff; color: white; padding: 2px 8px; border-radius: 4px; margin: 0 5px;">Azul</span> = 1 cita,
+<span style="background: #6f42c1; color: white; padding: 2px 8px; border-radius: 4px; margin: 0 5px;">Morado</span> = Autismo (F840) - Individual,
+<span style="background: #FFEB3B; color: #000; padding: 2px 8px; border-radius: 4px; margin: 0 5px; border: 1px solid #FBC02D;">Amarillo</span> = Deglución (937203) - Individual,
+<span style="background: #dc3545; color: white; padding: 2px 8px; border-radius: 4px; margin: 0 5px;">Rojo</span> = Agenda completa
+</p>`;
+for (const profesional in data.agenda) {
+html += `<div class="agenda-profesional">`;
+html += `<h4>${profesional}</h4>`;
+html += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 6px;">`;
+data.agenda[profesional].forEach(bloque => {
+const clickable = bloque.ocupados > 0 ?
+`onclick="mostrarCitasParaCancelar('${profesional}', '${fecha}', '${bloque.hora}')" style="cursor: pointer;"` :
+'';
+html += `
+<div class="bloque ${bloque.color}" ${clickable}>
+<div>${bloque.hora}</div>
+<div style="font-size:11px;">${bloque.ocupados}/2</div>
+</div>`;
+});
+html += `</div></div>`;
+}
+document.getElementById("contenedor_agenda_vista").innerHTML = html;
+})
+.catch(error => {
+console.error("Error:", error);
+const errorMsg = error.message.includes("no hábil") || error.message.includes("inválida") ?
+"❌ Seleccione un día hábil (lunes a viernes)" : error.message;
+document.getElementById("contenedor_agenda_vista").innerHTML =
+`<div class="error">${errorMsg}</div>`;
+});
+}
+// === FUNCIONES RESTANTES ===
+function mostrarCitasParaCancelar(profesional, fecha, hora) {
+fetch("/detalles-horario", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({profesional, fecha, hora})
+})
+.then(r => r.json())
+.then(data => {
+if (!data.citas || data.citas.length === 0) {
+alert("No hay citas en este horario");
+return;
+}
+const contenedor = document.createElement("div");
+contenedor.style.cssText = `
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+background: white;
+padding: 20px;
+border-radius: 12px;
+box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+z-index: 3000;
+max-width: 90%;
+max-height: 80vh;
+overflow-y: auto;
+`;
+contenedor.id = "contenedor_temporal_citas";
+let html = `<h3>👥 Citas en ${hora} - ${fecha}</h3>`;
+html += `<p><strong>Profesional:</strong> ${profesional}</p>`;
+data.citas.forEach(cita => {
+html += `
+<div style="border: 1px solid #ddd; padding: 12px; margin: 12px 0; border-radius: 8px; background: #f8f9fa;">
+<div style="font-weight: bold; color: #004a80; font-size: 16px;">${cita.Nombre_Completo}</div>
+<div style="color: #28a745; font-weight: 500; margin: 4px 0;">${cita.Servicio}</div>
+<div style="font-size: 13px; color: #666;">
+📞 ${cita.Celular || 'No registrado'} | 📧 ${cita.Email || 'No registrado'}
+</div>
+<div style="font-size: 13px; color: #666; margin-top: 4px;">
+🆔 ${cita.Tipo_Doc}-${cita.Num_Doc} | 🏥 Dx: ${cita.Dx_Codigo}
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;">
+<!-- ✅ CAMBIO 2: Botones condicionales por rol -->
+{% if not es_profesional %}
+<button onclick="enviarRecordatorio('${cita.Tipo_Doc}', '${cita.Num_Doc}', '${profesional}', '${fecha}', '${hora}', '${cita.CUPS}')"
+style="background: linear-gradient(to bottom, #25d366, #1da851); color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(37, 211, 102, 0.3);">
+📩 Enviar Recordatorio
+</button>
+<button onclick="cancelarCita('${cita.Tipo_Doc}', '${cita.Num_Doc}', '${profesional}', '${fecha}', '${hora}', '${cita.CUPS}', this)"
+style="background: linear-gradient(to bottom, #dc3545, #c82333); color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);">
+❌ Cancelar Cita
+</button>
+<button onclick="cancelarBloque('${cita.Tipo_Doc}', '${cita.Num_Doc}', '${profesional}', '${cita.CUPS}', this)"
+style="background: linear-gradient(to bottom, #6c757d, #545b62); color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);">
+🗑️ Cancelar Bloque
+</button>
+{% endif %}
+<!-- ✅ ESTE BOTÓN LO VEN TODOS (Admin y Profesional) -->
+<button onclick="marcarNoAsistio('${cita.Tipo_Doc}', '${cita.Num_Doc}', '${profesional}', '${fecha}', '${hora}', '${cita.CUPS}', this)"
+style="background: linear-gradient(to bottom, #6f42c1, #5a32a3); color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(111, 66, 193, 0.3);">
+🟥 No Asistió
+</button>
+
+<!-- ✅ BOTÓN GAS - SOLO PROFESIONALES -->
+{% if es_profesional %}
+<button onclick="abrirGASDesdeCita('${cita.Tipo_Doc}', '${cita.Num_Doc}', '${cita.Nombre_Completo}')"
+style="background: linear-gradient(to bottom, #6f42c1, #5a32a3); color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(111, 66, 193, 0.3);">
+🎯 Metas GAS
+</button>
+{% endif %}
+{% if not es_profesional %}
+<button onclick="abrirModalReasignacionIndividual(
+'${cita.Tipo_Doc}', '${cita.Num_Doc}', '${profesional}', '${fecha}', '${hora}', '${cita.CUPS}'
+)"
+style="background: linear-gradient(to bottom, #ffc107, #e0a800); color: black; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);">
+🔄 Reasignar
+</button>
+<button onclick="abrirReasignarBloqueCompleto(
+'${cita.Tipo_Doc}', '${cita.Num_Doc}', '${cita.CUPS}', '${profesional}'
+)"
+style="background: linear-gradient(to bottom, #ff6b35, #d45028); color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);">
+🔄 Reasignar Bloque Completo
+</button>
+{% endif %}
+</div>
+</div>
+`;
+});
+html += `<button onclick="document.getElementById('contenedor_temporal_citas').remove()"
+style="background: linear-gradient(to bottom, #6c757d, #545b62); color: white; border: none; padding: 10px 20px; border-radius: 8px; margin-top: 15px; width: 100%; font-weight: bold; box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);">
+← Cerrar
+</button>`;
+contenedor.innerHTML = html;
+document.body.appendChild(contenedor);
+});
+}
+// ✅ CAMBIO 3: Validación de rol en funciones JavaScript
+function cancelarCita(tipoDoc, numDoc, profesional, fecha, hora, cups, boton) {
+// ✅ VALIDACIÓN DE ROL
+if (ROL_USUARIO === "true") {
+alert("⛔ Solo el administrador puede cancelar citas.");
+return;
+}
+if (!confirm("¿Está seguro de cancelar esta cita? Esta acción no se puede deshacer.")) return;
+boton.disabled = true;
+boton.innerHTML = "⏳ Cancelando...";
+boton.style.background = "linear-gradient(to bottom, #6c757d, #545b62)";
+fetch("/cancelar-cita", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({
+tipo_doc: tipoDoc,
+num_doc: numDoc,
+profesional: profesional,
+fecha: fecha,
+hora: hora,
+cups: cups
+})
+})
+.then(r => r.json())
+.then(data => {
+if (data.exito) {
+const contenedor = document.getElementById("contenedor_temporal_citas");
+if (contenedor) contenedor.remove();
+alert("✅ Cita cancelada correctamente");
+cargarAgendaVista();
+} else {
+alert("❌ Error: " + data.mensaje);
+boton.disabled = false;
+boton.innerHTML = "❌ Cancelar Cita";
+boton.style.background = "linear-gradient(to bottom, #dc3545, #c82333)";
+}
+})
+.catch(error => {
+console.error("Error:", error);
+alert("❌ Error de conexión. Intente nuevamente.");
+boton.disabled = false;
+boton.innerHTML = "❌ Cancelar Cita";
+boton.style.background = "linear-gradient(to bottom, #dc3545, #c82333)";
+});
+}
+function cancelarBloque(tipoDoc, numDoc, profesional, cups, boton) {
+// ✅ VALIDACIÓN DE ROL
+if (ROL_USUARIO === "true") {
+alert("⛔ Solo el administrador puede cancelar bloques.");
+return;
+}
+// ✅ CORRECCIÓN: Saltos de línea con \n
+if (!confirm("¿Está seguro de CANCELAR TODO el bloque terapéutico para este servicio?\nEsta acción cancelará todas las citas futuras de este mismo bloque.")) return;
+boton.disabled = true;
+boton.innerHTML = "⏳ Cancelando...";
+boton.style.background = "linear-gradient(to bottom, #6c757d, #545b62)";
+fetch("/cancelar-bloque", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({
+tipo_doc: tipoDoc,
+num_doc: numDoc,
+profesional: profesional,
+cups: cups
+})
+})
+.then(r => r.json())
+.then(data => {
+if (data.exito) {
+const contenedor = document.getElementById("contenedor_temporal_citas");
+if (contenedor) contenedor.remove();
+alert("✅ " + data.mensaje);
+cargarAgendaVista();
+} else {
+alert("❌ " + data.mensaje);
+boton.disabled = false;
+boton.innerHTML = "🗑️ Cancelar Bloque";
+boton.style.background = "linear-gradient(to bottom, #6c757d, #545b62)";
+}
+})
+.catch(err => {
+console.error("Error:", err);
+alert("❌ Error al cancelar el bloque.");
+boton.disabled = false;
+boton.innerHTML = "🗑️ Cancelar Bloque";
+boton.style.background = "linear-gradient(to bottom, #6c757d, #545b62)";
+});
+}
+function marcarNoAsistio(tipoDoc, numDoc, profesional, fecha, hora, cups, boton) {
+// ✅ ESTA FUNCIÓN NO TIENE VALIDACIÓN DE ROL (la pueden usar todos)
+if (!confirm("¿Está seguro que el paciente NO ASISTIÓ a la cita? Esta acción no se puede deshacer.")) return;
+boton.disabled = true;
+boton.innerHTML = "⏳ Registrando...";
+boton.style.background = "linear-gradient(to bottom, #6c757d, #545b62)";
+fetch("/marcar-no-asistio", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({
+tipo_doc: tipoDoc,
+num_doc: numDoc,
+profesional: profesional,
+fecha: fecha,
+hora: hora,
+cups: cups
+})
+})
+.then(r => r.json())
+.then(data => {
+if (data.exito) {
+const contenedor = document.getElementById("contenedor_temporal_citas");
+if (contenedor) contenedor.remove();
+alert("✅ Cita marcada como NO ASISTIÓ.");
+cargarAgendaVista();
+} else {
+alert("❌ Error: " + data.mensaje);
+boton.disabled = false;
+boton.innerHTML = "🟥 No Asistió";
+boton.style.background = "linear-gradient(to bottom, #6f42c1, #5a32a3)";
+}
+})
+.catch(error => {
+console.error("Error:", error);
+alert("❌ Error de conexión. Intente nuevamente.");
+boton.disabled = false;
+boton.innerHTML = "🟥 No Asistió";
+boton.style.background = "linear-gradient(to bottom, #6f42c1, #5a32a3)";
+});
+}
+function enviarRecordatorio(tipoDoc, numDoc, profesional, fecha, hora, cups) {
+// ✅ VALIDACIÓN DE ROL
+if (ROL_USUARIO === "true") {
+alert("⛔ Solo el administrador puede enviar recordatorios.");
+return;
+}
+fetch("/recordatorio-whatsapp", {
+method: "POST",
+headers: {"Content-Type": "application/json"},
+body: JSON.stringify({
+tipo_doc: tipoDoc,
+num_doc: numDoc,
+profesional: profesional,
+fecha: fecha,
+hora: hora,
+cups: cups
+})
+})
+.then(r => r.json())
+.then(data => {
+if (data.exito && data.celular && data.mensaje) {
+const url = `https://wa.me/${data.celular}?text=${encodeURIComponent(data.mensaje)}`;
+window.open(url, "_blank");
+} else {
+alert("❌ " + (data.mensaje || "No se pudo generar el recordatorio."));
+}
+})
+.catch(err => {
+console.error("Error al generar recordatorio:", err);
+alert("❌ Error de conexión al generar el recordatorio.");
+});
+}
+function enviarRecordatoriosManana() {
+fetch("/recordatorios-manana")
+.then(r => r.json())
+.then(data => {
+if (!data.exito) {
+alert("ℹ️ " + data.mensaje);
+return;
+}
+const contenedor = document.createElement("div");
+contenedor.id = "contenedor_recordatorios_manana";
+contenedor.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; display: flex; align-items: center; justify-content: center;";
+const contenido = document.createElement("div");
+contenido.className = "modal-content";
+contenido.innerHTML = `<h3>📲 Recordatorios para ${data.fecha}</h3><div id="lista_recordatorios"></div>`;
+const lista = contenido.querySelector("#lista_recordatorios");
+data.recordatorios.forEach(r => {
+const btn = document.createElement("button");
+btn.className = "btn-whatsapp";
+btn.style.display = "block";
+btn.style.margin = "8px 0";
+btn.style.width = "100%";
+btn.textContent = `📤 Enviar a ${r.nombre}`;
+btn.onclick = () => {
+const url = `https://wa.me/${r.celular}?text=${encodeURIComponent(r.mensaje)}`;
+window.open(url, "_blank");
+};
+lista.appendChild(btn);
+});
+const cerrarBtn = document.createElement("button");
+cerrarBtn.className = "btn-nueva";
+cerrarBtn.textContent = "Cerrar";
+cerrarBtn.style.marginTop = "15px";
+cerrarBtn.onclick = () => contenedor.remove();
+contenido.appendChild(cerrarBtn);
+contenedor.appendChild(contenido);
+document.body.appendChild(contenedor);
+})
+.catch(err => {
+console.error("Error:", err);
+alert("❌ Error al cargar los recordatorios.");
+});
+}
+function limpiarDx() {
+if (!dxData) return;
+if (confirm("¿Desea corregir el diagnóstico? Esto limpiará los datos actuales y las secciones dependientes.")) {
+document.getElementById("dx_input").value = "";
+document.getElementById("resultado_dx").innerHTML = "";
+dxData = null;
+document.getElementById("btn_corregir_dx").style.display = "none";
+ocultar("seccion_contacto");
+ocultar("seccion_servicio");
+document.getElementById("celular").value = "";
+document.getElementById("email").value = "";
+document.getElementById("lista_servicios").innerHTML = "";
+document.getElementById("cups_input").value = "";
+document.getElementById("resultado_servicio").innerHTML = "";
+servicioTemporal = null;
+document.getElementById("btn_corregir_servicio").style.display = "none";
+datosPacienteReporte = null;
+const contBoton = document.getElementById("contenedor_boton_reporte_pdf");
+if (contBoton) contBoton.remove();
+alert("✅ Diagnóstico limpiado. Puede ingresar un nuevo código Dx.");
+}
+}
+function limpiarServicio() {
+const cupsValue = document.getElementById("cups_input").value.trim();
+if (!cupsValue) return;
+if (confirm("¿Desea corregir el servicio? Esto limpiará los datos actuales del servicio.")) {
+document.getElementById("cups_input").value = "";
+document.getElementById("resultado_servicio").innerHTML = "";
+document.getElementById("btn_corregir_servicio").style.display = "none";
+document.getElementById("cantidad").value = "";
+document.getElementById("frecuencia").value = "";
+document.getElementById("duracion").value = "";
+document.getElementById("observacion").value = "";
+document.getElementById("progreso_contenedor").innerHTML = "";
+servicioTemporal = null;
+ocultar("parametros");
+ocultar("contenedor_fecha_asignacion");
+const inputEvent = new Event('blur');
+document.getElementById("cups_input").dispatchEvent(inputEvent);
+datosPacienteReporte = null;
+const contBoton = document.getElementById("contenedor_boton_reporte_pdf");
+if (contBoton) contBoton.remove();
+alert("✅ Servicio limpiado. Puede ingresar un nuevo código CUPS.");
+}
+}
+function mostrarBotonReportePDF() {
+const contenedorExistente = document.getElementById("contenedor_boton_reporte_pdf");
+if (contenedorExistente) {
+contenedorExistente.remove();
+}
+const contenedorNuevaCita = document.getElementById("contenedor_nueva_cita");
+if (!contenedorNuevaCita) return;
+const contenedorBoton = document.createElement("div");
+contenedorBoton.id = "contenedor_boton_reporte_pdf";
+contenedorBoton.style.cssText = "margin-top: 10px; text-align: center;";
+contenedorBoton.innerHTML = `
+<button onclick="generarReportePDF()" class="btn-reportes" style="padding:10px 20px; font-weight:bold; width:auto;">
+📄 Generar Reporte para WhatsApp
+</button>
+`;
+contenedorNuevaCita.parentNode.insertBefore(contenedorBoton, contenedorNuevaCita.nextSibling);
+}
+async function generarReportePDF() {
+if (!datosPacienteReporte) {
+alert("❌ No hay datos del paciente.");
+return;
+}
+try {
+const response = await fetch("/generar-reporte-whatsapp-pdf", {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify(datosPacienteReporte)
+});
+if (!response.ok) {
+const errorData = await response.json().catch(() => ({}));
+throw new Error(errorData.mensaje || 'Error al generar el PDF.');
+}
+const blob = await response.blob();
+const url = window.URL.createObjectURL(blob);
+const a = document.createElement("a");
+a.href = url;
+a.download = `reporte_neuro_${datosPacienteReporte.tipo_doc}_${datosPacienteReporte.num_doc}.pdf`;
+document.body.appendChild(a);
+a.click();
+window.URL.revokeObjectURL(url);
+a.remove();
+} catch (err) {
+alert("❌ " + err.message);
+console.error(err);
+}
+}
+document.addEventListener("DOMContentLoaded", function() {
+const hoy = new Date().toISOString().split('T')[0];
+document.querySelectorAll('input[type="date"]').forEach(input => {
+if (!input.min) input.min = hoy;
+});
+});
+
+// === FUNCIÓN PARA ABRIR GAS DESDE LA CITA ===
+function abrirGASDesdeCita(tipoDoc, numDoc, nombrePaciente) {
+    // Redirige al panel de GAS del terapeuta con el paciente pre-seleccionado
+    location.href = `/terapeuta/gas?tipo=${tipoDoc}&num=${numDoc}&nombre=${encodeURIComponent(nombrePaciente)}`;
+}
+// === FUNCIÓN: Ver pacientes con escala GAS ===
+function verPacientesConGAS() {
+    const contenedor = document.getElementById("contenedor_pacientes_gas");
+    contenedor.innerHTML = "<p style='text-align:center; padding:20px;'>⏳ Cargando pacientes...</p>";
+    document.getElementById("modal_pacientes_gas").style.display = "flex";
+    
+    fetch("/gas/pacientes-con-gas")
+        .then(r => r.json())
+        .then(data => {
+            if (data.exito && data.pacientes.length > 0) {
+                let html = `<table style="width:100%; border-collapse:collapse; font-size:14px;">
+                    <thead>
+                        <tr style="background:#004a80; color:white;">
+                            <th style="padding:10px; text-align:left;">Documento</th>
+                            <th style="padding:10px; text-align:left;">Nombre</th>
+                            <th style="padding:10px; text-align:center;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+                
+                data.pacientes.forEach(p => {
+                    html += `<tr style="border-bottom:1px solid #ddd;">
+                        <td style="padding:10px;">${p.tipo_doc}-${p.num_doc}</td>
+                        <td style="padding:10px;">${p.nombre}</td>
+                        <td style="padding:10px; text-align:center;">
+                            <button onclick="irAGAS('${p.tipo_doc}', '${p.num_doc}', '${p.nombre}')"
+                                style="background:linear-gradient(to bottom, #6f42c1, #5a32a3); color:white; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px;">
+                                📊 Ver Reporte
+                            </button>
+                        </td>
+                    </tr>`;
+                });
+                
+                html += `</tbody></table>
+                    <p style="text-align:center; margin-top:15px; color:#666;">
+                        <strong>Total:</strong> ${data.total} paciente(s) con escala GAS
+                    </p>`;
+                
+                contenedor.innerHTML = html;
+            } else {
+                contenedor.innerHTML = `<p style="text-align:center; padding:30px; color:#666;">
+                    ⚠️ No hay pacientes con escala GAS registrada aún.
+                </p>`;
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            contenedor.innerHTML = `<p style="text-align:center; padding:30px; color:#dc3545;">
+                ❌ Error al cargar los datos.
+            </p>`;
+        });
+}
+
+function cerrarModalPacientesGAS() {
+    document.getElementById("modal_pacientes_gas").style.display = "none";
+}
+
+function irAGAS(tipoDoc, numDoc, nombre) {
+    window.open(`/gas/reporte/${tipoDoc}/${numDoc}`, '_blank');
+}
+
+</script>
+</body>
+</html>

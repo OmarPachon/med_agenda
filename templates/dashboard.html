@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>📊 Dashboard - Agendamiento-Med Elite</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background: url('/static/med.jpg') no-repeat center center fixed; background-size: cover; min-height: 100vh; padding: 20px; }
+body::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.85); z-index: -1; }
+.container { max-width: 1400px; margin: 0 auto; }
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding: 15px 25px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); flex-wrap: wrap; gap: 15px; }
+.header h1 { color: #004a80; font-size: 22px; }
+.header-info { color: #666; font-size: 14px; margin-top: 5px; }
+.btn-volver { background: linear-gradient(to bottom, #6c757d, #545b62); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+.btn-volver:hover { background: linear-gradient(to bottom, #5a6268, #444b50); }
+.btn-filtrar { background: linear-gradient(to bottom, #17a2b8, #138496); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+.btn-filtrar:hover { background: linear-gradient(to bottom, #138496, #117a8b); }
+.btn-excel { background: linear-gradient(to bottom, #217346, #1a5c38); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+.btn-excel:hover { background: linear-gradient(to bottom, #1a5c38, #144529); }
+.date-inputs { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.date-inputs input { padding: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+.grid-superior { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px; }
+.grid-inferior { display: grid; grid-template-columns: 1fr; gap: 20px; }
+.card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.card h3 { color: #0066a1; margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #e0f0fa; padding-bottom: 8px; }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.chart-container { position: relative; }
+.chart-container.standard { height: 350px; }
+.chart-container.grande { height: 550px !important; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+.stat-box { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 15px; border-radius: 10px; text-align: center; }
+.stat-box.purple { background: linear-gradient(135deg, #6f42c1, #5a32a3); }
+.stat-box.green { background: linear-gradient(135deg, #28a745, #218838); }
+.stat-box.orange { background: linear-gradient(135deg, #ffc107, #e0a800); color: #333; }
+.stat-box .number { font-size: 28px; font-weight: bold; }
+.stat-box .label { font-size: 13px; opacity: 0.95; }
+.quick-filters { display: flex; gap: 8px; margin: 15px 0; flex-wrap: wrap; }
+.quick-filter-btn { padding: 6px 12px; background: #007bff; color: white; border-radius: 6px; text-decoration: none; font-size: 13px; border: none; cursor: pointer; }
+.quick-filter-btn:hover { background: #0056b3; }
+.quick-filter-btn.green { background: #28a745; }
+.quick-filter-btn.green:hover { background: #1e7e34; }
+.quick-filter-btn.purple { background: #6f42c1; }
+.quick-filter-btn.purple:hover { background: #5a32a3; }
+@media (max-width: 768px) { 
+    .grid-superior { grid-template-columns: 1fr !important; } 
+    .grid-inferior { grid-template-columns: 1fr !important; } 
+    .stats { grid-template-columns: repeat(2, 1fr) !important; } 
+    .header { flex-direction: column; align-items: flex-start !important; }
+    .date-inputs { width: 100%; }
+    .date-inputs input { width: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<!-- Header con Filtros -->
+<div class="header">
+<div>
+<h1>📊 Dashboard Estadístico</h1>
+<p class="header-info">📅 {{ fecha_inicio }} → {{ fecha_fin }}</p>
+</div>
+<div class="date-inputs">
+<form method="GET" action="/dashboard" style="display: flex; gap: 10px; flex-wrap: wrap;">
+<input type="date" name="fecha_inicio" value="{{ fecha_inicio }}" required>
+<input type="date" name="fecha_fin" value="{{ fecha_fin }}" required>
+<button type="submit" class="btn-filtrar">🔍 Filtrar</button>
+</form>
+<button class="btn-volver" onclick="location.href='/'">← Volver</button>
+</div>
+</div>
+
+<!-- Filtros Rápidos -->
+<div class="quick-filters">
+<a href="/dashboard" class="quick-filter-btn">📅 Últimos 90 días</a>
+<a href="/dashboard?fecha_inicio={{ fecha_inicio[:7] }}-01&fecha_fin={{ fecha_fin }}" class="quick-filter-btn green">📅 Mes Actual</a>
+<a href="/dashboard?fecha_inicio={{ (fecha_inicio[:4]|int - 1) }}-01-01&fecha_fin={{ fecha_inicio[:4] }}-12-31" class="quick-filter-btn purple">📅 Año Anterior</a>
+</div>
+
+<!-- Stats Resumen -->
+<div class="stats">
+<div class="stat-box">
+<div class="number">{{ total_citas if total_citas else 0 }}</div>
+<div class="label">Total Citas</div>
+</div>
+<div class="stat-box purple">
+<div class="number">{{ dx_labels|length if dx_labels else 0 }}</div>
+<div class="label">Diagnósticos</div>
+</div>
+<div class="stat-box green">
+<div class="number">{{ cups_labels|length if cups_labels else 0 }}</div>
+<div class="label">Servicios CUPS</div>
+</div>
+<div class="stat-box orange">
+<div class="number">{{ citas_activas if citas_activas else 0 }}</div>
+<div class="label">Citas Activas</div>
+</div>
+</div>
+
+<!-- GRÁFICAS SUPERIORES (2x2) -->
+<div class="grid-superior">
+<!-- Citas por Mes -->
+<div class="card">
+<h3>📅 Citas por Mes</h3>
+<div class="chart-container standard">
+<canvas id="chartMeses"></canvas>
+</div>
+</div>
+
+<!-- Top CUPS -->
+<div class="card">
+<h3>⚕️ Top Servicios (CUPS)</h3>
+<div class="chart-container standard">
+<canvas id="chartCUPS"></canvas>
+</div>
+</div>
+
+<!-- Top Diagnósticos -->
+<div class="card">
+<h3>🏥 Top Diagnósticos</h3>
+<div class="chart-container standard">
+<canvas id="chartDX"></canvas>
+</div>
+</div>
+
+<!-- Estado de Citas -->
+<div class="card">
+<h3>📋 Estado de Citas</h3>
+<div class="chart-container standard">
+<canvas id="chartEstados"></canvas>
+</div>
+</div>
+</div>
+
+<!-- GRÁFICA INFERIOR (Profesionales + Gestión vs Metas) -->
+<div class="grid-inferior">
+<div class="card">
+<h3>👥 Terapias por Profesional</h3>
+<div class="chart-container grande">
+<canvas id="chartProfesionales"></canvas>
+</div>
+</div>
+
+<!-- ✅ GESTIÓN VS METAS POR CUPS Y RÉGIMEN -->
+<div class="card" style="grid-column: 1 / -1;">
+    <div class="card-header">
+        <h3>🎯 Gestión vs Metas por CUPS y Régimen</h3>
+        <button onclick="exportarGestionMetas()" class="btn-excel">📥 Exportar a Excel</button>
+    </div>
+    <div style="height: 600px; position: relative;">
+        <canvas id="chartGestionMetas"></canvas>
+    </div>
+    <div style="margin-top: 15px; font-size: 11px; color: #666; text-align: center; flex-wrap: wrap;">
+        <span style="display:inline-block; width:12px; height:12px; background:rgba(0,123,255,0.85); margin-right:5px;"></span> Real Sub
+        <span style="display:inline-block; width:12px; height:12px; background:rgba(0,123,255,0.25); border:1px solid #0056b3; margin:0 8px 0 15px;"></span> Meta Sub
+        <span style="display:inline-block; width:12px; height:12px; background:rgba(40,167,69,0.85); margin-right:5px;"></span> Real Cont
+        <span style="display:inline-block; width:12px; height:12px; background:rgba(40,167,69,0.25); border:1px solid #1e7e34; margin:0 8px 0 15px;"></span> Meta Cont
+        <span style="display:inline-block; width:12px; height:12px; background:rgba(111,66,193,0.9); margin-right:5px;"></span> Real Total
+        <span style="display:inline-block; width:12px; height:12px; background:rgba(111,66,193,0.2); border:2px solid #5a32a3; margin:0 8px 0 15px;"></span> Meta Total
+    </div>
+</div>
+</div>
+</div>
+
+<script>
+const colores = ['#007bff', '#28a745', '#ffc107', '#dc3545', '#6f42c1', '#17a2b8', '#fd7e14', '#20c997', '#6610f2', '#e83e8c'];
+
+// 1. Citas por Mes
+if ({{ meses_labels|length }} > 0) {
+    new Chart(document.getElementById('chartMeses'), {
+        type: 'bar',
+        data: {
+            labels: {{ meses_labels|tojson }},
+            datasets: [{
+                label: 'Citas',
+                data: {{ meses_values|tojson }},
+                backgroundColor: ['#007bff', '#28a745', '#ffc107', '#6f42c1', '#17a2b8', '#fd7e14', '#20c997'].slice(0, {{ meses_labels|length }}),
+                borderColor: ['#0056b3', '#1e7e34', '#e0a800', '#5a32a3', '#117a8b', '#d65f00', '#17a086'].slice(0, {{ meses_labels|length }}),
+                borderWidth: 2
+            }]
+        },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            scales: { 
+                y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                x: { title: { display: true, text: 'Mes' } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+} else {
+    document.getElementById('chartMeses').parentNode.innerHTML = '<p style="text-align:center; color:#666; padding:50px;">No hay datos en el rango seleccionado</p>';
+}
+
+// 2. Top CUPS (Doughnut)
+if ({{ cups_labels|length }} > 0) {
+    new Chart(document.getElementById('chartCUPS'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ cups_labels|tojson }},
+            datasets: [{
+                data: {{ cups_values|tojson }},
+                backgroundColor: colores.slice(0, {{ cups_labels|length }})
+            }]
+        },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            plugins: { legend: { position: 'bottom' } } 
+        }
+    });
+} else {
+    document.getElementById('chartCUPS').parentNode.innerHTML = '<p style="text-align:center; color:#666; padding:50px;">No hay servicios registrados</p>';
+}
+
+// 3. Top Diagnósticos (Barras Horizontales)
+if ({{ dx_labels|length }} > 0) {
+    new Chart(document.getElementById('chartDX'), {
+        type: 'bar',
+        data: {
+            labels: {{ dx_labels|tojson }},
+            datasets: [{
+                label: 'Cantidad',
+                data: {{ dx_values|tojson }},
+                backgroundColor: colores.slice(0, {{ dx_labels|length }})
+            }]
+        },
+        options: { 
+            indexAxis: 'y', 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            scales: { x: { beginAtZero: true } } 
+        }
+    });
+} else {
+    document.getElementById('chartDX').parentNode.innerHTML = '<p style="text-align:center; color:#666; padding:50px;">No hay diagnósticos registrados</p>';
+}
+
+// 4. Estado de Citas (Pie)
+if ({{ estados_labels|length }} > 0) {
+    new Chart(document.getElementById('chartEstados'), {
+        type: 'pie',
+        data: {
+            labels: {{ estados_labels|tojson }},
+            datasets: [{
+                data: {{ estados_values|tojson }},
+                backgroundColor: ['#28a745', '#dc3545', '#6f42c1', '#6c757d']
+            }]
+        },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            plugins: { legend: { position: 'bottom' } } 
+        }
+    });
+} else {
+    document.getElementById('chartEstados').parentNode.innerHTML = '<p style="text-align:center; color:#666; padding:50px;">No hay estados registrados</p>';
+}
+
+// 5. Terapias por Profesional
+if ({{ prof_labels|length }} > 0) {
+    new Chart(document.getElementById('chartProfesionales'), {
+        type: 'bar',
+        data: {
+            labels: {{ prof_labels|tojson }},
+            datasets: [{
+                label: 'Terapias',
+                data: {{ prof_values|tojson }},
+                backgroundColor: colores.slice(0, {{ prof_labels|length }}),
+                borderWidth: 1
+            }]
+        },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false,
+            scales: { 
+                x: { 
+                    beginAtZero: true, 
+                    title: { display: true, text: 'Profesional' },
+                    ticks: { maxRotation: 45, minRotation: 45, autoSkip: false, font: { size: 12 } }
+                },
+                y: { 
+                    beginAtZero: true, 
+                    title: { display: true, text: 'Cantidad de Terapias' },
+                    ticks: { stepSize: 1 }
+                }
+            },
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.parsed.y + ' terapias';
+                        }
+                    }
+                }
+            }
+        }
+    });
+} else {
+    document.getElementById('chartProfesionales').parentNode.innerHTML = '<p style="text-align:center; color:#666; padding:50px;">No hay profesionales registrados</p>';
+}
+
+// ✅ 6. GESTIÓN VS METAS POR CUPS Y RÉGIMEN (BARRAS HORIZONTALES - TODOS LOS CUPS)
+if ({{ gestion_vs_metas|length }} > 0) {
+    const ctx = document.getElementById('chartGestionMetas').getContext('2d');
+    const datos = {{ gestion_vs_metas|tojson }};
+    
+    const chartContainer = document.querySelector('#chartGestionMetas').closest('.chart-container');
+    if (chartContainer) {
+        const alturaTotal = Math.max(600, datos.length * 60);
+        chartContainer.style.height = alturaTotal + 'px';
+    }
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: datos.map(d => `${d.cups}\n${d.servicio}`),
+            datasets: [
+                {
+                    label: 'Real Subsidiado',
+                    data: datos.map(d => d.subsidiado.real),
+                    backgroundColor: 'rgba(0, 123, 255, 0.85)',
+                    borderColor: '#0056b3',
+                    borderWidth: 1,
+                    barPercentage: 0.9,
+                    categoryPercentage: 0.8
+                },
+                {
+                    label: 'Meta Subsidiado',
+                    data: datos.map(d => d.subsidiado.meta),
+                    backgroundColor: 'rgba(0, 123, 255, 0.25)',
+                    borderColor: '#0056b3',
+                    borderWidth: 1,
+                    borderDash: [4, 3],
+                    barPercentage: 0.9,
+                    categoryPercentage: 0.8
+                },
+                {
+                    label: 'Real Contributivo',
+                    data: datos.map(d => d.contributivo.real),
+                    backgroundColor: 'rgba(40, 167, 69, 0.85)',
+                    borderColor: '#1e7e34',
+                    borderWidth: 1,
+                    barPercentage: 0.9,
+                    categoryPercentage: 0.8
+                },
+                {
+                    label: 'Meta Contributivo',
+                    data: datos.map(d => d.contributivo.meta),
+                    backgroundColor: 'rgba(40, 167, 69, 0.25)',
+                    borderColor: '#1e7e34',
+                    borderWidth: 1,
+                    borderDash: [4, 3],
+                    barPercentage: 0.9,
+                    categoryPercentage: 0.8
+                },
+                {
+                    label: 'Real Total',
+                    data: datos.map(d => d.total.real),
+                    backgroundColor: 'rgba(111, 66, 193, 0.9)',
+                    borderColor: '#5a32a3',
+                    borderWidth: 2,
+                    barPercentage: 0.9,
+                    categoryPercentage: 0.8
+                },
+                {
+                    label: 'Meta Total',
+                    data: datos.map(d => d.total.meta),
+                    backgroundColor: 'rgba(111, 66, 193, 0.2)',
+                    borderColor: '#5a32a3',
+                    borderWidth: 2,
+                    borderDash: [4, 3],
+                    barPercentage: 0.9,
+                    categoryPercentage: 0.8
+                }
+            ]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Cantidad de Citas' },
+                    grid: { display: true },
+                    ticks: { autoSkip: true, maxTicksLimit: 20 }
+                },
+                y: {
+                    ticks: { font: { size: 11 }, autoSkip: false },
+                    grid: { display: false }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        afterLabel: function(context) {
+                            const idx = context.dataIndex;
+                            const d = datos[idx];
+                            const label = context.dataset.label;
+                            if (label.includes('Real')) {
+                                const key = label.replace('Real', '').trim().toLowerCase().replace(' ', '');
+                                const real = d[key]?.real || 0;
+                                const meta = d[key]?.meta || 0;
+                                const pct = meta > 0 ? ((real/meta)*100).toFixed(1) : (real > 0 ? '∞' : '0');
+                                const diff = real - meta;
+                                return [
+                                    'Meta: ' + meta,
+                                    'Diferencia: ' + (diff >= 0 ? '+'+diff : diff),
+                                    'Cumplimiento: ' + pct + '%'
+                                ];
+                            }
+                            return '';
+                        }
+                    }
+                },
+                legend: {
+                    position: 'bottom',
+                    labels: { font: { size: 10 }, boxWidth: 12, padding: 6 }
+                }
+            }
+        }
+    });
+} else {
+    const container = document.getElementById('chartGestionMetas');
+    if (container && container.parentNode) {
+        container.parentNode.innerHTML = '<p style="text-align:center; color:#666; padding:50px;">No hay metas configuradas o datos en el rango seleccionado</p>';
+    }
+}
+
+// ✅ FUNCIÓN PARA EXPORTAR GESTIÓN VS METAS A EXCEL
+async function exportarGestionMetas() {
+    const fechaInicio = document.querySelector('input[name="fecha_inicio"]').value;
+    const fechaFin = document.querySelector('input[name="fecha_fin"]').value;
+    
+    try {
+        const response = await fetch('/exportar-gestion-metas', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                fecha_inicio: fechaInicio,
+                fecha_fin: fechaFin
+            })
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Error al exportar');
+        }
+        
+        // Descargar archivo Excel
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `gestion_metas_${fechaInicio}_a_${fechaFin}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+        
+    } catch (error) {
+        alert('❌ Error al exportar: ' + error.message);
+        console.error(error);
+    }
+}
+</script>
+</body>
+</html>

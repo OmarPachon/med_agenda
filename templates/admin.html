@@ -1,0 +1,313 @@
+<!-- templates/admin.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agendamiento-Med Elite - Administración</title>
+    <style>
+        * { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: url('/static/med.jpg') no-repeat center center fixed;
+            background-size: cover;
+            padding: 15px;
+            position: relative;
+            font-size: 13px; /* ✅ Letra más pequeña */
+        }
+        body::before {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.88); z-index: -1;
+        }
+        .container {
+            max-width: 1100px; margin: 0 auto; background: white; padding: 20px;
+            border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #004a80; text-align: center; margin-bottom: 20px;
+            font-size: 20px;
+        }
+        button, input, select, textarea {
+            padding: 6px 8px;
+            border-radius: 5px;
+            font-size: 13px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background: linear-gradient(to bottom, #007bff, #0056b3);
+            color: white; border: none; cursor: pointer; margin: 4px 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; font-size: 12px; }
+        th { background: #e7f3ff; color: #0066a1; }
+        .form-section { margin: 20px 0; padding: 15px; background: #fafafa; border-radius: 8px; }
+        .editable-cel {
+            width: 90px;
+            padding: 3px 5px;
+            font-size: 12px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+        }
+        .editable-cel.guardando {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        .editable-cel.error {
+            border-color: #dc3545;
+            background-color: #f8d7da;
+        }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        
+        .copyright-footer {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(0, 74, 128, 0.92);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            font-size: 13px;
+            z-index: 1000;
+        }
+
+        .copyright-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .copyright-name {
+            font-weight: bold;
+        }
+
+        .copyright-version {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🔧 Panel de Administración - Agendamiento-Med Elite</h2>
+        <p><a href="/">← Volver al Agendamiento</a></p>
+
+        <!-- Dx -->
+        <div class="form-section">
+            <h3>📋 Diagnósticos (Dx)</h3>
+            <div>
+                <input type="text" id="dx_codigo" placeholder="Código (ej: F840)">
+                <input type="text" id="dx_nombre" placeholder="Nombre">
+                <button onclick="agregarDx()">➕ Agregar</button>
+            </div>
+            <table id="tabla_dx">
+                <thead><tr><th>Código</th><th>Nombre</th><th>Acción</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Servicios -->
+        <div class="form-section">
+            <h3>⚙️ Servicios</h3>
+            <div>
+                <input type="text" id="serv_cups" placeholder="CUPS">
+                <input type="text" id="serv_hom" placeholder="HOM/SOAT">
+                <input type="text" id="serv_nombre" placeholder="Nombre">
+                <button onclick="agregarServicio()">➕ Agregar</button>
+            </div>
+            <table id="tabla_serv">
+                <thead><tr><th>CUPS</th><th>HOM</th><th>Nombre</th><th>Acción</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Profesionales -->
+        <div class="form-section">
+            <h3>👨‍⚕️ Profesionales</h3>
+            <div>
+                <input type="text" id="prof_nombre" placeholder="Nombre">
+                <input type="text" id="prof_esp1" placeholder="Especialidad 1">
+                <input type="text" id="prof_esp2" placeholder="Especialidad 2">
+                <input type="text" id="prof_cel" placeholder="Celular" value="3">
+                <button onclick="agregarProfesional()">➕ Agregar</button>
+            </div>
+            <table id="tabla_prof">
+                <thead><tr><th>Nombre</th><th>Esp. 1</th><th>Esp. 2</th><th>Celular</th><th>Acción</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Copyright Footer -->
+    <div class="copyright-footer">
+        <div class="copyright-content">
+            <span>👨‍💻</span>
+            <div>
+                <div class="copyright-name">© Omar Alberto Pachon Pereira</div>
+                <div class="copyright-version">Agendamiento-Med Elite v2.0</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function cargarTablas() {
+            // Dx
+            const dx = await fetch("/admin/dx/lista").then(r => r.json());
+            document.querySelector("#tabla_dx tbody").innerHTML = dx.slice(1).map(line => {
+                const [codigo, nombre] = line.split("|");
+                return `<tr><td>${codigo}</td><td>${nombre}</td><td><button onclick="eliminarDx('${codigo.replace(/'/g, "\\'")}')">🗑️</button></td></tr>`;
+            }).join("");
+
+            // Servicios
+            const serv = await fetch("/admin/servicios/lista").then(r => r.json());
+            document.querySelector("#tabla_serv tbody").innerHTML = serv.slice(1).map(line => {
+                const [cups, hom, nombre] = line.split("|");
+                return `<tr><td>${cups}</td><td>${hom}</td><td>${nombre}</td><td><button onclick="eliminarServicio('${cups.replace(/'/g, "\\'")}')">🗑️</button></td></tr>`;
+            }).join("");
+
+            // Profesionales
+            const prof = await fetch("/admin/profesionales/lista").then(r => r.json());
+            const tbody = document.querySelector("#tabla_prof tbody");
+            tbody.innerHTML = prof.slice(1).map(line => {
+                const [nombre, e1, e2, cel] = line.split("|");
+                return `
+                    <tr>
+                        <td>${nombre}</td>
+                        <td>${e1}</td>
+                        <td>${e2 || ""}</td>
+                        <td>
+                            <input type="text" class="editable-cel" data-nombre="${encodeURIComponent(nombre)}" 
+                                   value="${cel || '3'}">
+                        </td>
+                        <td><button onclick="eliminarProfesional('${nombre.replace(/'/g, "\\'")}')">🗑️</button></td>
+                    </tr>`;
+            }).join("");
+            
+            // Asignar eventos después de renderizar
+            document.querySelectorAll('.editable-cel').forEach(input => {
+                input.addEventListener('change', function() {
+                    const nombre = decodeURIComponent(this.dataset.nombre);
+                    const nuevoCel = this.value.trim();
+                    guardarCelular(nombre, nuevoCel, this);
+                });
+                
+                // También guardar al presionar Enter
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        const nombre = decodeURIComponent(this.dataset.nombre);
+                        const nuevoCel = this.value.trim();
+                        guardarCelular(nombre, nuevoCel, this);
+                    }
+                });
+            });
+        }
+
+        async function guardarCelular(nombre, nuevoCel, inputElement) {
+            if (!nuevoCel.trim()) {
+                // Si el campo queda vacío, restaurar valor por defecto
+                nuevoCel = '3';
+                inputElement.value = nuevoCel;
+            }
+
+            // Feedback visual inmediato
+            inputElement.classList.add('guardando');
+            inputElement.disabled = true;
+            
+            try {
+                const response = await fetch("/admin/profesionales/editar/celular", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        nombre: nombre,
+                        celular: nuevoCel.trim()
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.exito) {
+                    inputElement.classList.remove('guardando');
+                    inputElement.classList.add('guardando');
+                    setTimeout(() => {
+                        inputElement.classList.remove('guardando');
+                    }, 1000);
+                    console.log(`✅ Celular actualizado para "${nombre}": ${nuevoCel}`);
+                } else {
+                    throw new Error(data.mensaje || 'Error al guardar');
+                }
+            } catch (error) {
+                console.error(`❌ Error al guardar celular para "${nombre}":`, error);
+                inputElement.classList.remove('guardando');
+                inputElement.classList.add('error');
+                setTimeout(() => {
+                    inputElement.classList.remove('error');
+                }, 2000);
+                alert(`❌ Error al guardar celular para ${nombre}: ${error.message}`);
+                // Mantener el valor intentado para que el usuario pueda corregirlo
+            } finally {
+                inputElement.disabled = false;
+            }
+        }
+
+        // === Funciones de agregar/eliminar (simplificadas) ===
+        async function agregarDx() {
+            const codigo = document.getElementById("dx_codigo").value.trim();
+            const nombre = document.getElementById("dx_nombre").value.trim();
+            if (!codigo || !nombre) {
+                alert("❌ Complete código y nombre del Dx.");
+                return;
+            }
+            await fetch("/admin/dx/agregar", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({codigo, nombre})});
+            cargarTablas();
+        }
+
+        async function agregarServicio() {
+            const cups = document.getElementById("serv_cups").value.trim();
+            const hom = document.getElementById("serv_hom").value.trim() || "N/A";
+            const nombre = document.getElementById("serv_nombre").value.trim();
+            if (!cups || !nombre) {
+                alert("❌ Complete CUPS y nombre del servicio.");
+                return;
+            }
+            await fetch("/admin/servicios/agregar", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({cups, hom, nombre})});
+            cargarTablas();
+        }
+
+        async function agregarProfesional() {
+            const nombre = document.getElementById("prof_nombre").value.trim();
+            const esp1 = document.getElementById("prof_esp1").value.trim();
+            const esp2 = document.getElementById("prof_esp2").value.trim();
+            const cel = document.getElementById("prof_cel").value.trim() || "3";
+            if (!nombre) {
+                alert("❌ Complete el nombre del profesional.");
+                return;
+            }
+            await fetch("/admin/profesionales/agregar", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({nombre, esp1, esp2, cel})});
+            cargarTablas();
+        }
+
+        async function eliminarDx(codigo) {
+            if (!confirm(`¿Eliminar Dx ${codigo}?`)) return;
+            await fetch("/admin/dx/eliminar", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({codigo})});
+            cargarTablas();
+        }
+
+        async function eliminarServicio(cups) {
+            if (!confirm(`¿Eliminar servicio ${cups}?`)) return;
+            await fetch("/admin/servicios/eliminar", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({cups})});
+            cargarTablas();
+        }
+
+        async function eliminarProfesional(nombre) {
+            if (!confirm(`¿Eliminar profesional ${nombre}?`)) return;
+            // Escapar el nombre correctamente para la solicitud
+            const nombreEscapado = nombre.replace(/'/g, "\\'");
+            await fetch("/admin/profesionales/eliminar", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({nombre: nombreEscapado})});
+            cargarTablas();
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', cargarTablas);
+    </script>
+</body>
+</html>

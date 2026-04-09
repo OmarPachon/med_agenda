@@ -1,0 +1,16 @@
+Meta_ID|Puntuacion|Criterio_Observable|Metodo_Verificacion
+GAS20260307134419|-2|Produce solo palabras sueltas o frases de 2 palabras; requiere modelado completo del terapeuta en el 100% de los intentos|observacion_directa
+GAS20260307134419|-1|Produce oraciones de 3 palabras con ayuda verbal del terapeuta en 3/5 oportunidades; precisión del 50%|observacion_directa
+GAS20260307134419|0|Oraciones de 4 palabras espontáneas, 80% precisión, 3/5 oportunidades sin modelado|observacion_directa
+GAS20260307134419|1|"Oraciones de 4+ palabras con conectores (""y"", ""porque""), 90% precisión, generaliza a 2 contextos diferentes"|observacion_directa
+GAS20260307134419|2|Inicia descripciones complejas de 5+ palabras con adjetivos calificativos, aplica en casa según reporte familiar|observacion_directa
+GAS20260307134922|-2|No logra manipular botones; requiere ayuda física total del adulto para cada intento|observacion_directa
+GAS20260307134922|-1|Abrocha 1-2 botones con ayuda verbal y física parcial; tiempo >5 minutos|observacion_directa
+GAS20260307134922|0|5 botones abrochados/desabrochados en <3 min, 90% éxito, 4/5 sesiones sin ayuda física|observacion_directa
+GAS20260307134922|1|Completa la tarea en <2 minutos, aplica habilidad con botones de diferentes tamaños (1-3cm)|observacion_directa
+GAS20260307134922|2|Abrocha botones en contexto real (chaqueta puesta), reporta aplicación en casa según familia|observacion_directa
+GAS20260307135147|-2|Evita interacción con pares; no responde a invitaciones verbales; contacto visual <1 segundo|observacion_directa
+GAS20260307135147|-1|Responde a invitaciones del terapeuta pero no inicia; contacto visual 1-2 segundos con recordatorio|observacion_directa
+GAS20260307135147|0|Inicia interacción con frases de saludo/invitación, 4/5 oportunidades, contacto visual ≥3 segundos|observacion_directa
+GAS20260307135147|1|Mantiene intercambio de 2-3 turnos conversacionales; aplica en 2 contextos diferentes (terapia y recreo)|observacion_directa
+GAS20260307135147|2|Inicia interacciones espontáneas con múltiples pares; resuelve conflictos menores con apoyo verbal mínimo|observacion_directa

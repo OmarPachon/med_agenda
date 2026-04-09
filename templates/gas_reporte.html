@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte GAS - {{ paciente.nombre }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f5f7fa; padding: 20px; }
+        
+        /* Header institucional */
+        .header {
+            background: linear-gradient(135deg, #004a80 0%, #0066a1 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .header h1 { font-size: 28px; margin-bottom: 10px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+        
+        /* Contenedor principal */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        /* Secciones */
+        .seccion {
+            margin: 25px 0;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border-left: 4px solid #6f42c1;
+        }
+        .seccion h3 {
+            color: #004a80;
+            margin-bottom: 15px;
+            font-size: 18px;
+            border-bottom: 2px solid #e0f0fa;
+            padding-bottom: 8px;
+        }
+        
+        /* Tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: linear-gradient(to bottom, #6f42c1, #5a32a3);
+            color: white;
+            font-weight: 600;
+        }
+        tr:hover { background: #f5f7fa; }
+        
+        /* T-score card */
+        .tscore-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .tscore-value { font-size: 48px; font-weight: bold; margin: 10px 0; }
+        .tscore-label { font-size: 16px; opacity: 0.9; }
+        
+        /* Badges de estado */
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .badge-activa { background: #007bff; color: white; }
+        .badge-finalizada { background: #28a745; color: white; }
+        .badge-evaluada { background: #17a2b8; color: white; }
+        
+        /* Botones de acción */
+        .btn-acciones {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .btn-print { background: #007bff; color: white; }
+        .btn-pdf { background: #dc3545; color: white; }
+        .btn-excel { background: #28a745; color: white; }
+        .btn-volver { background: #6c757d; color: white; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        
+        /* Footer */
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0f0fa;
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+        }
+        
+        /* Estilos para impresión */
+        @media print {
+            body { background: white; padding: 0; }
+            .btn-acciones { display: none; }
+            .container { box-shadow: none; }
+            .header { background: #004a80 !important; -webkit-print-color-adjust: exact; }
+            th { background: #6f42c1 !important; -webkit-print-color-adjust: exact; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header { padding: 20px; }
+            .header h1 { font-size: 22px; }
+            .container { padding: 20px; }
+            .tscore-value { font-size: 36px; }
+            .btn { width: 100%; margin: 5px 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🎯 Reporte de Progreso Terapéutico - Escala GAS</h1>
+            <p>MED ELITE SAS - NEURODESARROLLO | Cra 36 #54-50, Barrio Cabecera, Bucaramanga</p>
+            <p style="margin-top: 10px;">
+                <strong>Paciente:</strong> {{ paciente.nombre }} | 
+                <strong>Documento:</strong> {{ paciente.tipo_doc }}-{{ paciente.num_doc }} | 
+                <strong>Fecha Reporte:</strong> {{ fecha_reporte }}
+            </p>
+        </div>
+        
+        <!-- Botones de acción -->
+        <div class="btn-acciones">
+            <button class="btn btn-print" onclick="window.print()">🖨️ Imprimir Reporte</button>
+            <button class="btn btn-pdf" onclick="exportarPDF()">📄 Exportar PDF</button>
+            <button class="btn btn-excel" onclick="exportarExcel()">📊 Exportar Excel</button>
+            <button class="btn btn-volver" onclick="location.href='/terapeuta/gas'">← Volver</button>
+        </div>
+        
+        <!-- T-Score Global -->
+        <div class="tscore-card">
+            <div class="tscore-label">PUNTAJE T-SCORE GLOBAL (Kiresuk & Sherman, 1968)</div>
+            <div class="tscore-value">{{ tscore.t_score if tscore.t_score else 'N/A' }}</div>
+            <div style="font-size: 18px; font-weight: 500;">{{ tscore.interpretacion }}</div>
+            <small style="opacity: 0.8; margin-top: 10px; display: block;">
+                Metas evaluadas: {{ tscore.detalles.num_metas if tscore.detalles else 0 }} | 
+                Peso total: {{ tscore.detalles.sum_w if tscore.detalles else 0 }}
+            </small>
+        </div>
+        
+        <!-- Resumen de Metas -->
+        <div class="seccion">
+            <h3>📋 Resumen de Metas Terapéuticas</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Meta</th>
+                        <th>Descripción</th>
+                        <th>Dominio</th>
+                        <th>Peso</th>
+                        <th>Estado</th>
+                        <th>Fecha Evaluación</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for meta in metas %}
+                    <tr>
+                        <td><small>{{ meta.Meta_ID }}</small></td>
+                        <td>{{ meta.Descripcion[:80] }}{% if meta.Descripcion|length > 80 %}...{% endif %}</td>
+                        <td>{{ meta.Dominio }}</td>
+                        <td>{{ meta.Peso }}</td>
+                        <td>
+                            <span class="badge badge-{{ meta.Estado }}">{{ meta.Estado }}</span>
+                        </td>
+                        <td>{{ meta.Fecha_Evaluacion }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Detalle de Evaluaciones -->
+        <div class="seccion">
+            <h3>📊 Historial de Evaluaciones</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Meta ID</th>
+                        <th>Tipo</th>
+                        <th>Puntuación</th>
+                        <th>Profesional</th>
+                        <th>Evidencia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for eval in evaluaciones %}
+                    <tr>
+                        <td>{{ eval.Fecha_Eval }}</td>
+                        <td><small>{{ eval.Meta_ID }}</small></td>
+                        <td>{{ eval.Tipo_Eval }}</td>
+                        <td>
+                            {% set p = eval.Puntuacion_Lograda|int %}
+                            {% if p <= -1 %}
+                                <span style="color: #dc3545; font-weight: bold;">{{ p }}</span>
+                            {% elif p == 0 %}
+                                <span style="color: #28a745; font-weight: bold;">{{ p }}</span>
+                            {% else %}
+                                <span style="color: #007bff; font-weight: bold;">+{{ p }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ eval.Profesional_Evaluador }}</td>
+                        <td><small>{{ eval.Evidencia[:60] }}{% if eval.Evidencia|length > 60 %}...{% endif %}</small></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Interpretación Clínica -->
+        <div class="seccion" style="border-left-color: #28a745;">
+            <h3>🩺 Interpretación Clínica</h3>
+            <div style="background: white; padding: 15px; border-radius: 8px;">
+                {% if tscore.t_score %}
+                    {% if tscore.t_score < 40 %}
+                        <p style="color: #dc3545; font-weight: 500;">🔴 <strong>Progreso Insuficiente:</strong> Se requiere revisión del plan de intervención y ajuste de estrategias terapéuticas.</p>
+                    {% elif tscore.t_score < 50 %}
+                        <p style="color: #ffc107; font-weight: 500;">🟡 <strong>Progreso Parcial:</strong> El paciente muestra avances pero no alcanza las metas esperadas. Considerar prolongar intervención.</p>
+                    {% elif tscore.t_score < 60 %}
+                        <p style="color: #28a745; font-weight: 500;">🟢 <strong>Meta Lograda:</strong> El paciente alcanzó los objetivos terapéuticos esperados. Continuar seguimiento.</p>
+                    {% elif tscore.t_score < 70 %}
+                        <p style="color: #007bff; font-weight: 500;">🔵 <strong>Superación Moderada:</strong> El paciente superó las expectativas. Considerar nuevas metas más desafiantes.</p>
+                    {% else %}
+                        <p style="color: #6f42c1; font-weight: 500;">🟣 <strong>Resultado Excepcional:</strong> Progreso sobresaliente. Documentar estrategias exitosas para replicar.</p>
+                    {% endif %}
+                {% else %}
+                    <p style="color: #666;">⚠️ No hay suficientes evaluaciones finales para calcular el T-score.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Agendamiento-Med Elite v2.0</strong> | Sistema de Gestión Clínica</p>
+            <p>© 2025 Omar Alberto Pachon Pereira | Todos los derechos reservados</p>
+            <p style="margin-top: 10px; font-size: 11px; color: #999;">
+                Este reporte es confidencial y de uso exclusivo para fines clínicos y administrativos.
+            </p>
+        </div>
+    </div>
+    
+    <script>
+    // === FUNCIÓN: Imprimir Reporte (abre versión institucional) ===
+    function imprimirReporte() {
+        const tipo_doc = "{{ paciente.tipo_doc }}";
+        const num_doc = "{{ paciente.num_doc }}";
+        const url = `/gas/reporte-imprimir/${tipo_doc}/${num_doc}`;
+        window.open(url, '_blank');
+    }
+
+    // === FUNCIÓN: Exportar PDF (abre versión institucional y activa impresión) ===
+    function exportarPDF() {
+        const tipo_doc = "{{ paciente.tipo_doc }}";
+        const num_doc = "{{ paciente.num_doc }}";
+        const url = `/gas/reporte-imprimir/${tipo_doc}/${num_doc}`;
+        const ventana = window.open(url, '_blank');
+        // Espera a que cargue la ventana y activa la impresión
+        if (ventana) {
+            ventana.onload = function() {
+                ventana.print();
+            };
+        }
+    }
+
+    // === FUNCIÓN: Exportar Excel (se mantiene igual) ===
+    function exportarExcel() {
+        const tipo_doc = "{{ paciente.tipo_doc }}";
+        const num_doc = "{{ paciente.num_doc }}";
+        window.location.href = `/gas/exportar-excel/${tipo_doc}/${num_doc}`;
+    }
+    </script>
+    
+</body>
+</html>

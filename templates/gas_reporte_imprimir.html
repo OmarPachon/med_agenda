@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Reporte GAS - {{ paciente.nombre }}</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        
+        body { 
+            background: white; 
+            padding: 0;
+            color: #333;
+            line-height: 1.5;
+            font-size: 11px;
+        }
+        
+        /* Encabezado institucional */
+        .header {
+            background: linear-gradient(135deg, #004a80 0%, #0066a1 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid #6f42c1;
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .header-logo img {
+            height: 50px;
+            background: white;
+            border-radius: 8px;
+            padding: 5px;
+        }
+        .header-info h1 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        .header-info p {
+            font-size: 10px;
+            opacity: 0.9;
+        }
+        .header-dates {
+            text-align: right;
+            font-size: 10px;
+        }
+        
+        /* Contenedor principal */
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px 25px;
+        }
+        
+        /* Información del paciente */
+        .paciente-card {
+            background: #f8f9fa;
+            border: 2px solid #004a80;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .paciente-card h2 {
+            color: #004a80;
+            font-size: 13px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #004a80;
+            padding-bottom: 5px;
+        }
+        .paciente-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            font-size: 10px;
+        }
+        .paciente-info strong {
+            color: #004a80;
+        }
+        
+        /* T-Score destacado */
+        .tscore-box {
+            background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+        .tscore-box h3 {
+            font-size: 11px;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+        .tscore-value {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+        .tscore-interpretacion {
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+        .tscore-detalles {
+            font-size: 9px;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+        
+        /* Secciones */
+        .seccion {
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+        .seccion h3 {
+            color: #004a80;
+            font-size: 13px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #e0f0fa;
+            padding-bottom: 5px;
+        }
+        
+        /* ✅ TABLAS - CORREGIDO PARA PDF */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 9px;
+            table-layout: auto; /* ✅ CLAVE: auto en vez de fixed */
+        }
+        th, td {
+            padding: 5px 6px;
+            text-align: left;
+            border: 1px solid #ddd;
+            word-break: break-word; /* ✅ CLAVE: break-word en vez de break-all */
+            white-space: normal; /* ✅ CLAVE: normal en vez de nowrap */
+            vertical-align: top;
+        }
+        th {
+            background: #004a80;
+            color: white;
+            font-weight: 600;
+            font-size: 9px;
+        }
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        /* ✅ ANCHOS DE COLUMNAS - TABLA METAS (Suma 100%) */
+        .tabla-metas th:nth-child(1), .tabla-metas td:nth-child(1) { width: 10%; } /* ID */
+        .tabla-metas th:nth-child(2), .tabla-metas td:nth-child(2) { width: 50%; } /* Descripción - MÁS ESPACIO */
+        .tabla-metas th:nth-child(3), .tabla-metas td:nth-child(3) { width: 10%; } /* Dominio */
+        .tabla-metas th:nth-child(4), .tabla-metas td:nth-child(4) { width: 8%; text-align: center; } /* Peso */
+        .tabla-metas th:nth-child(5), .tabla-metas td:nth-child(5) { width: 10%; text-align: center; } /* Estado */
+        .tabla-metas th:nth-child(6), .tabla-metas td:nth-child(6) { width: 12%; } /* Fecha */
+        
+        /* ✅ ANCHOS DE COLUMNAS - TABLA EVALUACIONES (Suma 100%) */
+        .tabla-evaluaciones th:nth-child(1), .tabla-evaluaciones td:nth-child(1) { width: 12%; } /* Fecha */
+        .tabla-evaluaciones th:nth-child(2), .tabla-evaluaciones td:nth-child(2) { width: 10%; } /* Meta ID */
+        .tabla-evaluaciones th:nth-child(3), .tabla-evaluaciones td:nth-child(3) { width: 10%; } /* Tipo */
+        .tabla-evaluaciones th:nth-child(4), .tabla-evaluaciones td:nth-child(4) { width: 8%; text-align: center; } /* Puntuación */
+        .tabla-evaluaciones th:nth-child(5), .tabla-evaluaciones td:nth-child(5) { width: 20%; } /* Profesional */
+        .tabla-evaluaciones th:nth-child(6), .tabla-evaluaciones td:nth-child(6) { width: 40%; } /* Evidencia - MÁS ESPACIO */
+        
+        /* Interpretación clínica */
+        .interpretacion {
+            background: #f8f9fa;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        .interpretacion h4 {
+            color: #004a80;
+            margin-bottom: 10px;
+            font-size: 11px;
+        }
+        .interpretacion p {
+            font-size: 10px;
+            line-height: 1.5;
+        }
+        
+        /* Firmas */
+        .firmas {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            page-break-inside: avoid;
+        }
+        .firma-box {
+            text-align: center;
+            border-top: 2px solid #333;
+            padding-top: 8px;
+        }
+        .firma-box p {
+            font-size: 9px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        /* Pie de página */
+        .footer {
+            background: #004a80;
+            color: white;
+            padding: 15px 30px;
+            text-align: center;
+            font-size: 9px;
+            margin-top: 30px;
+        }
+        .footer p {
+            margin: 3px 0;
+        }
+        .footer strong {
+            font-size: 10px;
+        }
+        
+        /* ✅ ESTILOS PARA IMPRESIÓN - CRÍTICO PARA PDF */
+        @media print {
+            body { 
+                background: white !important; 
+                padding: 0 !important;
+                font-size: 9px;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .header {
+                background: #004a80 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            th {
+                background: #004a80 !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .tscore-box {
+                background: #6f42c1 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .footer {
+                background: #004a80 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            @page {
+                margin: 1cm;
+                size: letter;
+            }
+            /* Evitar cortes en elementos importantes */
+            .seccion, .paciente-card, .tscore-box, .interpretacion, .firmas {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            /* ✅ TABLAS: Evitar que el texto se rompa en vertical */
+            table {
+                table-layout: auto !important;
+                width: 100% !important;
+            }
+            td {
+                word-break: break-word !important;
+                white-space: normal !important;
+                overflow: visible !important;
+            }
+            tr {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Encabezado Institucional -->
+    <div class="header">
+        <div class="header-logo">
+            <!-- ✅ LOGO RESTAURADO -->
+            <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo Institucional" onerror="this.style.display='none'">
+            <div class="header-info">
+                <h1>NEURODESARROLLO</h1>
+                <p>Cra 36 #54-50, Barrio Cabecera, Bucaramanga</p>
+                <p>Tel: (607) 123-4567</p>
+            </div>
+        </div>
+        <div class="header-dates">
+            <p><strong>Reporte de Progreso Terapéutico</strong></p>
+            <p>Escala GAS (Goal Attainment Scaling)</p>
+            <p>Fecha: {{ fecha_reporte }}</p>
+        </div>
+    </div>
+    
+    <!-- Contenedor Principal -->
+    <div class="container">
+        <!-- Información del Paciente -->
+        <div class="paciente-card">
+            <h2>📋 INFORMACIÓN DEL PACIENTE</h2>
+            <div class="paciente-info">
+                <div><strong>Nombre:</strong> {{ paciente.nombre }}</div>
+                <div><strong>Documento:</strong> {{ paciente.tipo_doc }}-{{ paciente.num_doc }}</div>
+                <div><strong>Fecha Reporte:</strong> {{ fecha_reporte }}</div>
+                <div><strong>Profesional:</strong> {{ profesional }}</div>
+            </div>
+        </div>
+        
+        <!-- T-Score Global -->
+        <div class="tscore-box">
+            <h3>PUNTAJE T-SCORE GLOBAL (Kiresuk & Sherman, 1968)</h3>
+            <div class="tscore-value">{{ tscore.t_score if tscore.t_score else 'N/A' }}</div>
+            <div class="tscore-interpretacion">{{ tscore.interpretacion }}</div>
+            <div class="tscore-detalles">
+                Metas: {{ tscore.detalles.num_metas if tscore.detalles else 0 }} | 
+                Peso: {{ tscore.detalles.sum_w if tscore.detalles else 0 }}
+            </div>
+        </div>
+        
+        <!-- Resumen de Metas -->
+        <div class="seccion">
+            <h3>📋 RESUMEN DE METAS TERAPÉUTICAS</h3>
+            <table class="tabla-metas">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Descripción</th>
+                        <th>Dominio</th>
+                        <th>Peso</th>
+                        <th>Estado</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for meta in metas %}
+                    <tr>
+                        <td>{{ meta.Meta_ID }}</td>
+                        <td>{{ meta.Descripcion }}</td>
+                        <td>{{ meta.Dominio }}</td>
+                        <td style="text-align: center;">{{ meta.Peso }}</td>
+                        <td style="text-align: center;">{{ meta.Estado }}</td>
+                        <td>{{ meta.Fecha_Evaluacion }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Historial de Evaluaciones -->
+        <div class="seccion">
+            <h3>📊 HISTORIAL DE EVALUACIONES</h3>
+            <table class="tabla-evaluaciones">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Meta</th>
+                        <th>Tipo</th>
+                        <th>Punt.</th>
+                        <th>Profesional</th>
+                        <th>Evidencia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for eval in evaluaciones %}
+                    <tr>
+                        <td>{{ eval.Fecha_Eval }}</td>
+                        <td>{{ eval.Meta_ID }}</td>
+                        <td>{{ eval.Tipo_Eval }}</td>
+                        <td style="text-align: center; font-weight: bold;">
+                            {% set p = eval.Puntuacion_Lograda|int %}
+                            {% if p <= -1 %}
+                                {{ p }}
+                            {% elif p == 0 %}
+                                {{ p }}
+                            {% else %}
+                                +{{ p }}
+                            {% endif %}
+                        </td>
+                        <td>{{ eval.Profesional_Evaluador }}</td>
+                        <td>{{ eval.Evidencia }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Interpretación Clínica -->
+        <div class="interpretacion">
+            <h4>🩺 INTERPRETACIÓN CLÍNICA</h4>
+            {% if tscore.t_score %}
+                {% if tscore.t_score < 40 %}
+                    <p><strong>🔴 Progreso Insuficiente:</strong> Se requiere revisión del plan de intervención.</p>
+                {% elif tscore.t_score < 50 %}
+                    <p><strong>🟡 Progreso Parcial:</strong> El paciente muestra avances pero no alcanza las metas esperadas.</p>
+                {% elif tscore.t_score < 60 %}
+                    <p><strong>🟢 Meta Lograda:</strong> El paciente alcanzó los objetivos terapéuticos esperados.</p>
+                {% elif tscore.t_score < 70 %}
+                    <p><strong>🔵 Superación Moderada:</strong> El paciente superó las expectativas.</p>
+                {% else %}
+                    <p><strong>🟣 Resultado Excepcional:</strong> Progreso sobresaliente.</p>
+                {% endif %}
+            {% else %}
+                <p>⚠️ No hay suficientes evaluaciones finales para calcular el T-score.</p>
+            {% endif %}
+        </div>
+        
+        <!-- Firmas -->
+        <div class="firmas">
+            <div class="firma-box">
+                <div style="height: 50px;"></div>
+                <p><strong>{{ profesional }}</strong></p>
+                <p>Profesional Responsable</p>
+            </div>
+            <div class="firma-box">
+                <div style="height: 50px;"></div>
+                <p><strong>Coordinación Clínica</strong></p>
+                <p>NEURODESARROLLO</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Pie de Página -->
+    <div class="footer">
+        <p><strong>NEURODESARROLLO - Centro de Rehabilitación Integral</strong></p>
+        <p>Cra 36 #54-50, Barrio Cabecera, Bucaramanga, Colombia</p>
+        <p>© 2025 NEURODESARROLLO - Todos los derechos reservados.</p>
+    </div>
+</body>
+</html>
