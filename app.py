@@ -10,6 +10,7 @@ from flask import Flask, render_template, request, jsonify, send_file, session, 
 from functools import wraps
 from werkzeug.security import check_password_hash, generate_password_hash
 import csv
+import file_lock_utils
 import sys
 csv.field_size_limit(sys.maxsize)
 from datetime import datetime, date, timedelta
@@ -733,13 +734,15 @@ def guardar_cita():
         "Estado": "activa"
     }
     cita_completa = {campo: cita.get(campo, "") for campo in CAMPOS_AGENDA}
-    existe = os.path.exists("data/agenda.csv")
-    with open("data/agenda.csv", "a", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=CAMPOS_AGENDA)
-        if not existe:
-            writer.writeheader()
-        writer.writerow(cita_completa)
-    return jsonify({"exito": True, "mensaje": "Registro guardado correctamente."})
+    
+    try:
+        # Usamos la función segura que crea backup y usa bloqueo
+        import file_lock_utils
+        file_lock_utils.safe_csv_append("data/agenda.csv", cita_completa, CAMPOS_AGENDA)
+        return jsonify({"exito": True, "mensaje": "Registro guardado correctamente con respaldo automático."})
+    except Exception as e:
+        return jsonify({"exito": False, "mensaje": f"Error al guardar: {str(e)}"}), 500
+    
 # ✅ CORREGIDO: Validación de paciente duplicado en bloques (MODIFICADA - Deglución = Individual como Autismo)
 @app.route("/guardar-cita-bloque", methods=["POST"])
 @login_requerido
@@ -850,15 +853,21 @@ def guardar_cita_bloque():
                     "Fecha_Registro": datetime.now().strftime("%Y-%m-%d %H:%M"),
                     "Estado": "activa"
                 }
-                cita_completa = {campo: cita.get(campo, "") for campo in CAMPOS_AGENDA}
-                if writer is None:
-                    existe = os.path.exists("data/agenda.csv") and os.path.getsize("data/agenda.csv") > 0
-                    writer = csv.DictWriter(f, fieldnames=CAMPOS_AGENDA)
-                    if not existe:
-                        writer.writeheader()
-                writer.writerow(cita_completa)
-    msg = f"✅ Bloque agendado: {cantidad_total} sesiones en {total_visitas} visitas ({sesiones_por_visita} por visita)."
-    return jsonify({"exito": True, "mensaje": msg})
+                 # 1. Preparar la lista de todas las citas nuevas en memoria
+                nuevas_citas = []
+                for cita in lista_de_citas_del_bloque: # <--- Asegúrate de usar la variable correcta de tu loop
+                    cita_completa = {campo: cita.get(campo, "") for campo in CAMPOS_AGENDA}
+                    nuevas_citas.append(cita_completa)
+
+                # 2. Usar la función segura para escribir todo de una vez
+                try:
+                    import file_lock_utils
+                    file_lock_utils.safe_csv_append_multiple("data/agenda.csv", nuevas_citas, CAMPOS_AGENDA)
+                    
+                    msg = f"✅ Bloque agendado: {len(nuevas_citas)} sesiones guardadas con respaldo automático."
+                    return jsonify({"exito": True, "mensaje": msg})
+                except Exception as e:
+                    return jsonify({"exito": False, "mensaje": f"Error al guardar bloque: {str(e)}"}), 500
 @app.route("/cancelar-cita", methods=["POST"])
 @login_requerido
 def cancelar_cita():
